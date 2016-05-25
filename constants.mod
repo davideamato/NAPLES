@@ -1,0 +1,85 @@
+GFORTRAN module version '10' created from constants.f90
+MD5:fa53be477c599dbfc1288079acd0b60c -- If you edit this, you'll get what you deserve.
+
+(() () () () () () () () () () () () () () () () () () () () () () ()
+() () () ())
+
+()
+
+()
+
+()
+
+()
+
+()
+
+(2 'constants' 'constants' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0
+0)
+3 'd2r' 'constants' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+4 'dk' 'kinds' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
+5 'du' 'constants' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+6 'j2earth' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 16 0 0 0 REAL ()) 0 '0.46f3da57cfcaae0e9ba435d4ce230@-2') () 0 () ()
+() 0 0)
+7 'kinds' 'kinds' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0 0)
+8 'muearth' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 16 0 0 0 REAL ()) 0 '0.61509000000000000000000000000@5') () 0 () ()
+() 0 0)
+9 'musun' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 16 0 0 0 REAL ()) 0 '0.1ee646f1e00000000000000000000@10') () 0 () ()
+() 0 0)
+10 'pi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () (CONSTANT (REAL 16 0 0
+0 REAL ()) 0 '0.3243f6a8885a308d313198a2e0370@1') () 0 () () () 0 0)
+11 'qk' 'kinds' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (CONSTANT (
+INTEGER 4 0 0 0 INTEGER ()) 0 '16') () 0 () () () 0 0)
+12 'r_soi' 'constants' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () () 0 () () ()
+0 0)
+13 'rearth' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 16 0 0 0 REAL ()) 0 '0.18e33851eb851eb851eb851eb851f@4') () 0 () ()
+() 0 0)
+14 'secsperday' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 16 0 0 0 REAL ()) 0 '0.15180000000000000000000000000@5') () 0 () ()
+() 0 0)
+15 'set_units' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
+DECL UNKNOWN 0 0 SUBROUTINE) (UNKNOWN 0 0 0 0 UNKNOWN ()) 16 0 (17 18) ()
+0 () () () 0 0)
+19 'smaearth' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 16 0 0 0 REAL ()) 0 '0.8eaaf470000000000000000000000@7') () 0 () ()
+() 0 0)
+20 'tu' 'constants' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+21 'twopi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 16 0 0 0 REAL ()) 0 '0.6487ed5110b4611a62633145c06e0@1') () 0 () ()
+() 0 0)
+22 'wearth' 'constants' '' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 16 0 0 0 REAL ()) 0 0 () () 0 () () ()
+0 0)
+17 'r' '' '' 16 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION
+DUMMY) (REAL 16 0 0 0 REAL ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4
+0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3'))
+0 () () () 0 0)
+18 'mu' '' '' 16 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY) (
+REAL 16 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+)
+
+('constants' 0 2 'd2r' 0 3 'dk' 0 4 'du' 0 5 'j2earth' 0 6 'kinds' 0 7
+'muearth' 0 8 'musun' 0 9 'pi' 0 10 'qk' 0 11 'r_soi' 0 12 'rearth' 0 13
+'secsperday' 0 14 'set_units' 0 15 'smaearth' 0 19 'tu' 0 20 'twopi' 0
+21 'wearth' 0 22)

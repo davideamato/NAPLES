@@ -1,0 +1,29 @@
+This version of ODEPACK has been modified as to make it compatible with the single-precision version when both are compiled in a program at the same time.
+
+In all the files, the following subroutines contained in opkda1.f have been renamed:
+JGROUP	->	DJGROUP
+ADJLR	->	DADJLR
+CNTNZU	->	DCNTNZU
+MD		->	DMD	
+MDI		->	DMDI	
+MDM		->	DMDM	
+MDP		->	DMDP	
+MDU		->	DMDU	
+
+In all the files, the following subroutines contained in opkda2.f have been renamed:
+XSETF	->	DXSETF
+XSETUN	->	DXSETUN
+IXSAV	->	DIXSAV
+IUMACH	->	DIUMACH
+
+In the subroutines SLSODAR, SSTODA and SPRJA the argument 'F' has been declared
+as a pointer. --> REVERTED TO ORIGINAL on 5.5.2016.
+In the subroutines SLSODAR and SRCHEK the argument 'G' has been declared as a
+pointer. --> REVERTED TO ORIGINAL on 5.5.2016
+The "pointerized" versions now have the "_pointers" suffix in their filename.
+
+
+
+Davide Amato
+d.amato@upm.es
+28/04/2016
