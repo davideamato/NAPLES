@@ -1,0 +1,4 @@
+# Ignore gfortran object files
+*.o
+# Ignore gfortran module files
+*.mod
