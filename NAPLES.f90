@@ -19,7 +19,7 @@ use AUXILIARIES, only: JD_i,JD_stop,JD_CA,time_steps,meth_switch,RSwitch,&
 &ind_time,inSoI
 use IO,          only: id_set,id_ares,id_rres,id_enres,id_stats
 use IO,          only: READ_SETTINGS,WRITE_SETTINGS,CREATE_ENRES,CREATE_ABSRES,&
-&CREATE_RELRES,CREATE_STATS,WRITE_RESULTS,WRITE_EXCEPTION
+&CREATE_RELRES,CREATE_SMARES,CREATE_STATS,WRITE_RESULTS,WRITE_EXCEPTION
 use REFERENCE_TRAJECTORY_MOD, only: REFERENCE_TRAJECTORY_COWELL
 use TEST_PROP,   only: DP_TRAJECTORY
 use PROCESSING,  only: RESIDUALS
@@ -55,7 +55,8 @@ integer   ::  ind_in,ind_out
 integer   ::  ind_in_ref,ind_out_ref
 real(qk)  ::  JD_in,JD_out,JD_f
 ! Results
-real(dk)  ::  dR_abs(1:3),dR_rel(1:3),dV_abs(1:3),dV_rel(1:3),dEn_rel(1:3)
+real(dk)  ::  dR_abs(1:3),dR_rel(1:3),dV_abs(1:3),dV_rel(1:3)
+real(dk)  ::  dEn_rel(1:3),dSMA_abs(1:3)
 ! Sanity checks, settings and diagnostics
 integer   ::  istate_bwd,istate_fwd,istate_curr
 integer   ::  idiag(1:3)
@@ -153,6 +154,7 @@ call WRITE_SETTINGS(trim(ppath)//'settings_'//runID//'.txt',runID)
 call CREATE_ENRES(trim(ppath)//'enres_'//runID//'.dat',runID)
 call CREATE_ABSRES(trim(ppath)//'absres_'//runID//'.dat',runID)
 call CREATE_RELRES(trim(ppath)//'relres_'//runID//'.dat',runID)
+call CREATE_SMARES(trim(ppath)//'smares_'//runID//'.dat',runID)
 call CREATE_STATS(trim(ppath)//'stats_'//runID//'.dat',runID)
 
 ! ==============================================================================
@@ -262,15 +264,6 @@ d_loop: do i_d = 1,n_d
         if (allocated(time_steps)) deallocate(time_steps)
         allocate(time_steps(1:lenref),source=ref_traj(:,1))
         
-!        do ii=1,size(ref_traj,1)
-!          write(20,'(7(es22.15,'',''))') ref_traj(ii,:)
-!!          write(30,'(7(es22.15,'',''))') dp_full(ii,:)
-!        end do
-
-!        write(*,*) lenref
-!        write(*,*) size(ref_traj,1)
-!        read(*,*)
-        
         ! ======================================================================
         ! 06. TEST PROPAGATION
         ! ======================================================================
@@ -379,12 +372,12 @@ d_loop: do i_d = 1,n_d
         state_cp_ref(4,:) = ref_traj(lenref,:)
         
         call RESIDUALS(3,state_cp_ref(2:4,:),state_cp(2:4,:),smaEarth,muSun,&
-        &RSw_arr(l_r),dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,RSw_eff,RSw_diff)
+        &RSw_arr(l_r),dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,dSMA_abs,RSw_eff,RSw_diff)
         
         ! OUTPUT RESIDUALS
         call WRITE_RESULTS(i_d,j_e,k_t,l_r,d_arr(i_d),e_arr(j_e),th_arr(k_t),&
-        &RSw_arr(l_r),dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,RSw_diff,MF,XC,&
-        &callsArr,istepsArr,mordArr,calls_end,mord_end,isteps_end)
+        &RSw_arr(l_r),dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,dSMA_abs,RSw_diff,MF,&
+        &XC,callsArr,istepsArr,mordArr,calls_end,mord_end,isteps_end)
         
         ! Flush output to disk every 100 propagations
         call FLUSHO()
@@ -476,6 +469,10 @@ subroutine FLUSHO()
 end subroutine FLUSHO
 
 end program NAPLES
+
+! ========================================
+! ========== DEBUGGING GARBAGE ===========
+! ========================================
 
 !do ii=1,lenref
 !  write(52,'(7(es22.15,'',''))') dp_traj(ii,1:7)

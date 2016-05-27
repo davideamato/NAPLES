@@ -9,6 +9,7 @@ implicit none
 integer,parameter  ::  iin = 10, id_set = 11
 integer,parameter  ::  id_ares = 12, id_rres = 13, id_enres = 14
 integer,parameter  ::  id_stats = 15
+integer,parameter  ::  id_sma = 16
 
 
 contains
@@ -314,6 +315,28 @@ write(id_rres,'(172(''#''))')
 end subroutine CREATE_RELRES
 
 
+subroutine CREATE_SMARES(pathname,runID)
+
+implicit none
+! Arguments IN
+character(len=*),intent(in)    ::  pathname,runID
+
+! ==============================================================================
+
+open(unit=id_sma,file=pathname,status='replace',action='write')
+write(id_sma,'(120(''#''))')
+write(id_sma,'(2(''#''),55x,a7,54x,2(''#''))') 'NAPLES'
+write(id_sma,'(2(''#''),38x,a40,38x,2(''#''))') 'SEMI-MAJOR AXIS ABSOLUTE RESIDUALS'
+write(id_sma,'(120(''#''),/,''#'')')
+
+write(id_sma,'(''#'',a2,1x,3(a3,1x),7(a14,1x),a2,1x,a3)') &
+&'i','j','k','l','dmin [R_E]','ecc [-]','theta [deg]','RSw [AU]',&
+&'dSMA_IN [AU]','dSMA_OUT [AU]','dSMA_END [AU]','MF','XC'
+write(id_sma,'(128(''#''))')
+
+end subroutine CREATE_SMARES
+
+
 subroutine CREATE_STATS(pathname,runID)
 
 implicit none
@@ -338,8 +361,8 @@ end subroutine CREATE_STATS
 
 
 subroutine WRITE_RESULTS(i,j,k,l,dmin,ecc,theta,RSw,&
-&dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,RSw_diff,MF,XC,callsArr,istepsArr,mordArr,&
-&calls_end,mord_end,isteps_end)
+&dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,dSMA_abs,RSw_diff,MF,XC,callsArr,istepsArr,&
+&mordArr,calls_end,mord_end,isteps_end)
 
 implicit none
 ! Arguments IN
@@ -347,7 +370,7 @@ integer,intent(in)   ::  i,j,k,l
 integer,intent(in)   ::  MF(1:3),XC,callsArr(1:2),calls_end,istepsArr(1:2),isteps_end
 real(qk),intent(in)  ::  dmin,ecc,theta,RSw
 real(dk),intent(in)  ::  RSw_diff,dR_abs(1:3),dR_rel(1:3),dV_abs(1:3),dV_rel(1:3)
-real(dk),intent(in)  ::  dEn_rel(1:3),mordArr(1:2),mord_end
+real(dk),intent(in)  ::  dEn_rel(1:3),dSMA_abs(1:3),mordArr(1:2),mord_end
 
 write(id_enres,'(4(i3,'',''),4(g14.7,'',''),3(es14.7,'',''),3i1,'','',i3.3)')&
 & i,j,k,l,dmin,ecc,theta,RSw,dEn_rel,MF,XC
@@ -355,6 +378,8 @@ write(id_ares,'(4(i3,'',''),4(g14.7,'',''),6(es14.7,'',''),3i1,'','',i3.3)')&
 & i,j,k,l,dmin,ecc,theta,RSw,dR_abs,dV_abs,MF,XC
 write(id_rres,'(4(i3,'',''),4(g14.7,'',''),6(es14.7,'',''),3i1,'','',i3.3)')&
 & i,j,k,l,dmin,ecc,theta,RSw,dR_rel,dV_rel,MF,XC
+write(id_sma,'(4(i3,'',''),4(g14.7,'',''),3(es14.7,'',''),3i1,'','',i3.3)')&
+& i,j,k,l,dmin,ecc,theta,RSw,dSMA_abs,MF,XC
 write(id_stats,&
 &'(4(i3,'',''),4(g14.7,'',''),3(i9,'',''),3(g14.7,'',''),3(i10,'',''),g14.7,'','',3i1,'','',i3.3)')&
 &i,j,k,l,dmin,ecc,theta,RSw,callsArr,calls_end,mordArr,mord_end,istepsArr,isteps_end,RSw_diff,MF,XC

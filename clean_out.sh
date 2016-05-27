@@ -1,6 +1,6 @@
 #!/bin/bash
 
-outpath='/home/davide/raw/NACE/'
+outpath='/home/davide/raw/NAPLES/'
 curpath=$(pwd)
 
 cd $outpath
