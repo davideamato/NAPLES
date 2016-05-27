@@ -1,4 +1,4 @@
-# Input file for the program CEsim.
+# Input file for the program NAPLES.
 #
 # Davide Amato
 # d.amato@upm.es
@@ -10,7 +10,7 @@
 # Rsw_int    Interval of switch radii               [AU]
 d_int:       1.E0                  ,20.E0                 
 e_int:       1.01E0                ,15.E0                 
-th0_int:     0.E0                  ,90.E0     
+th0_int:     30.E0                 ,90.E0     
 Rsw_int:     0.00618088574537262   ,0.00618088574537262
 
 # MESH SETTINGS
@@ -22,7 +22,7 @@ Rsw_int:     0.00618088574537262   ,0.00618088574537262
 n_d:         10
 n_e:         10
 n_th:        2           
-n_rs:        1
+n_rs:        0
 espacing:    1
 
 # INTEGRATOR SETTINGS
@@ -32,9 +32,9 @@ espacing:    1
 # dt_H:      Physical time step size for phases H-/H+ (days)
 # dt_CE:     Physical time step size for phase CE (days) 
 # mxsteps:   Maximum number of steps taken in the propagations (> 1k recommended)
-integ:       2
+integ:       1
 tolref:      1.E-23                
-tol:         1.E-8                
+tol:         1.E-15
 dt_H:        10.E0
 dt_CE:       0.5E0
 mxsteps:     100000        
@@ -43,8 +43,8 @@ mxsteps:     100000
 # eqs:       -1 = Cowell (II), 1 = Cowell (I), 2 = K-S, 3 = EDromo, 4 = GDromo.
 # The choices 3 (EDromo) and 4 (GDromo) are valid only in the heliocentric and
 # close encounter phases respectively. The choice -1 is only valid for integ = 2.
-eqs_H:       -1
-eqs_CE:      -1
+eqs_H:       1
+eqs_CE:      1
 
 # REGULARIZED FORMULATION SETTINGS
 # ftime_EDr: Type of EDromo time element. 0 = physical time, 1 = Constant Time Element,

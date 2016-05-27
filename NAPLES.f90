@@ -67,6 +67,7 @@ real(dk)  ::  RSw_eff(1:2),RSw_diff
 integer   ::  XC,MF(1:3)
 integer   ::  callsArr(1:2),calls_end,istepsArr(1:2),isteps_end
 real(dk)  ::  mordArr(1:2),mord_end
+integer   ::  ncheck
 ! CPU time
 real(dk)  ::  cputime_start,cputime_end
 ! Auxiliary variables
@@ -83,7 +84,7 @@ integer  ::  ii
 
 write(*,'(80(''*''))')
 write(*,'(''*'',35x,a7,36x,''*'')') 'NAPLES'
-write(*,'(''*'',19x,a39,20x,''*'')') 'Numerical Analysis of Close Encounters.'
+write(*,'(''*'',17x,a43,18x,''*'')') 'Numerical Analysis of PLanetary EncounterS.'
 write(*,'(80(''*''))')
 
 ! ==============================================================================
@@ -105,7 +106,7 @@ write(*,'(4a,/)') 'Simulation ',date,time(1:6),' starting.'
 allocate(d_arr(1:n_d))
 allocate(e_arr(1:n_e))
 allocate(th_arr(1:n_th))
-allocate(RSw_arr(1:n_rs))
+allocate(RSw_arr(1:maxval([n_rs,1])))
 
 ! d mesh (linear)
 delta = (d_int(2) - d_int(1))/(n_d - 1)
@@ -137,7 +138,7 @@ do k_t = 2,n_th
     th_arr(k_t) = th_arr(1) + (k_t - 1)*delta
 end do
 
-! RSw mesh
+! RSw mesh (linear)
 delta = (RSw_int(2) - RSw_int(1))/(n_rs - 1)
 RSw_arr(1) = RSW_int(1)
 do l_r = 2,n_rs
@@ -166,7 +167,7 @@ wEarth = sqrt((muEarth+muSun)/smaEarth**3)
 R_SoI  = (muEarth/muSun)**(2._qk/5._qk)*smaEarth
 d2r = pi/180._qk
 i_sim = 0; i_fail = 0
-totsim = n_d*n_e*n_th*n_rs
+totsim = n_d*n_e*n_th*maxval([n_rs,1])
 if (totsim <= 10000) then
   step_mess = 10
 else if (totsim > 10000 .and. totsim < 1000000) then
@@ -187,7 +188,7 @@ d_loop: do i_d = 1,n_d
       
       theta = th_arr(k_t)*d2r
       
-      RSw_loop: do l_r = 1,n_rs
+      RSw_loop: do l_r = 1,maxval([n_rs,1])
         
         RSwitch = Rsw_arr(l_r)*smaEarth
         
@@ -227,6 +228,7 @@ d_loop: do i_d = 1,n_d
         calls_end = 0; callsArr = 0
         isteps_end = 0; istepsArr = 0
         mord_end = 0._dk; mordArr = 0
+        RSw_eff = 0._dk
         
         ! ======================================================================
         ! 05a. REFERENCE TRAJECTORY - BWD
@@ -275,7 +277,11 @@ d_loop: do i_d = 1,n_d
         ind_time = 2
         
         state_cp(1,:) = ref_traj(1,:)
-        JD_stop = JD_in
+        if (n_rs /= 0) then
+          JD_stop = JD_in
+        else if (n_rs == 0) then
+          JD_stop = JD_f
+        end if
         eqs = eqs_H
         
         call DP_TRAJECTORY(state_cp(1,2:4),state_cp(1,5:7),JD_i,JD_stop,eqs,&
@@ -283,75 +289,87 @@ d_loop: do i_d = 1,n_d
         if (EXCEPTION_CHECK(idiag(2),phase=1)) cycle RSw_loop
         
         len_H1 = size(dp_H1,1)
-        state_cp(2,:) = dp_H1(len_H1,:)
+        if (n_rs == 0) then
+          state_cp(4,:) = dp_H1(len_H1,:)
+          
+          ! Save diagnostics
+          calls_end = calls_end + idiag(1)
+          isteps_end = isteps_end + idiag(3)
+          mord_end = mord_end + rdiag(2)
         
-        ! Save diagnostics
-        calls_end = calls_end + idiag(1);   callsArr(1) = idiag(1)
-        isteps_end = isteps_end + idiag(3); istepsArr(1) = idiag(3)
-        mord_end = mord_end + rdiag(2);     mordArr(1) = rdiag(2)
+        else
+          state_cp(2,:) = dp_H1(len_H1,:)
+          
+          ! Save diagnostics
+          calls_end = calls_end + idiag(1);   callsArr(1) = idiag(1)
+          isteps_end = isteps_end + idiag(3); istepsArr(1) = idiag(3)
+          mord_end = mord_end + rdiag(2);     mordArr(1) = rdiag(2)
         
-        ! === START OF PHASE CE (planetocentric) ===
-        
-        inSoI = .true.
-        
-        ! Switch to the planetocentric frame in quad precision.
-        yD_Earth = QPOS_VEL_CIRC(real(dp_H1(len_H1,1),qk),wEarth,smaEarth)
-        R_i = state_cp(2,2:4) - yD_Earth(1:3)
-        V_i = state_cp(2,5:7) - yD_Earth(4:6)
-        
-        JD_stop = JD_out
-        eqs = eqs_CE
-        
-        call DP_TRAJECTORY(R_i,V_i,state_cp(2,1)/secsPerDay,JD_stop,eqs,&
-        &integ,tol,dp_CE,idiag,rdiag)
-        if (EXCEPTION_CHECK(idiag(2),phase=2)) cycle RSw_loop
-        
-        ! Save diagnostics
-        calls_end = calls_end + idiag(1);   callsArr(2) = idiag(1)
-        isteps_end = isteps_end + idiag(3); istepsArr(2) = idiag(3)
-        mord_end = mord_end + rdiag(2);     mordArr(2) = rdiag(2)
-        
-        len_CE = size(dp_CE,1)
-        ! Save effective switch radii
-        RSw_eff(1) = sqrt(dot_product(R_i,R_i))
-        RSw_eff(2) = sqrt(dot_product(dp_CE(len_CE,2:4),dp_CE(len_CE,2:4)))
-        RSw_eff = RSw_eff/smaEarth
-        
-        ! dp_CE is planetocentric, convert to heliocentric in quad precision.
-        helio_conv: do ii = 1,len_CE
-          yt_quad = dp_CE(ii,1:7)
-          dp_CE(ii,2:7) = yt_quad(2:7) + QPOS_VEL_CIRC(yt_quad(1),wEarth,smaEarth)
-        end do helio_conv
-        
-        state_cp(3,:) = dp_CE(len_CE,:)
-        
-        ! === START OF PHASE H2 (heliocentric) ===
-        
-        inSoI = .false.
-        R_i = state_cp(3,2:4)
-        V_i = state_cp(3,5:7)
-        
-        JD_stop = JD_f
-        eqs = eqs_H
-        
-        call DP_TRAJECTORY(R_i,V_i,state_cp(3,1)/secsPerDay,JD_stop,eqs,&
-        &integ,tol,dp_H2,idiag,rdiag)
-        if (EXCEPTION_CHECK(idiag(2),phase=3)) cycle RSw_loop
-        
-        ! Save diagnostics
-        calls_end = calls_end + idiag(1)
-        isteps_end = isteps_end + idiag(3)
-        mord_end = mord_end + rdiag(2); mord_end = mord_end/3._dk
-        
-        len_H2 = size(dp_H2,1)
-        state_cp(4,:) = dp_H2(len_H2,:)
-        
-        ! === END OF THE PROPAGATION ===
+          ! === START OF PHASE CE (planetocentric) ===
+          
+          inSoI = .true.
+          
+          ! Switch to the planetocentric frame in quad precision.
+          yD_Earth = QPOS_VEL_CIRC(real(dp_H1(len_H1,1),qk),wEarth,smaEarth)
+          R_i = state_cp(2,2:4) - yD_Earth(1:3)
+          V_i = state_cp(2,5:7) - yD_Earth(4:6)
+          
+          JD_stop = JD_out
+          eqs = eqs_CE
+          
+          call DP_TRAJECTORY(R_i,V_i,state_cp(2,1)/secsPerDay,JD_stop,eqs,&
+          &integ,tol,dp_CE,idiag,rdiag)
+          if (EXCEPTION_CHECK(idiag(2),phase=2)) cycle RSw_loop
+          
+          ! Save diagnostics
+          calls_end = calls_end + idiag(1);   callsArr(2) = idiag(1)
+          isteps_end = isteps_end + idiag(3); istepsArr(2) = idiag(3)
+          mord_end = mord_end + rdiag(2);     mordArr(2) = rdiag(2)
+          
+          len_CE = size(dp_CE,1)
+          ! Save effective switch radii
+          RSw_eff(1) = sqrt(dot_product(R_i,R_i))
+          RSw_eff(2) = sqrt(dot_product(dp_CE(len_CE,2:4),dp_CE(len_CE,2:4)))
+          RSw_eff = RSw_eff/smaEarth
+          
+          ! dp_CE is planetocentric, convert to heliocentric in quad precision.
+          helio_conv: do ii = 1,len_CE
+            yt_quad = dp_CE(ii,1:7)
+            dp_CE(ii,2:7) = yt_quad(2:7) + QPOS_VEL_CIRC(yt_quad(1),wEarth,smaEarth)
+          end do helio_conv
+          
+          state_cp(3,:) = dp_CE(len_CE,:)
+          
+          ! === START OF PHASE H2 (heliocentric) ===
+          
+          inSoI = .false.
+          R_i = state_cp(3,2:4)
+          V_i = state_cp(3,5:7)
+          
+          JD_stop = JD_f
+          eqs = eqs_H
+          
+          call DP_TRAJECTORY(R_i,V_i,state_cp(3,1)/secsPerDay,JD_stop,eqs,&
+          &integ,tol,dp_H2,idiag,rdiag)
+          if (EXCEPTION_CHECK(idiag(2),phase=3)) cycle RSw_loop
+          
+          ! Save diagnostics
+          calls_end = calls_end + idiag(1)
+          isteps_end = isteps_end + idiag(3)
+          mord_end = mord_end + rdiag(2); mord_end = mord_end/3._dk
+          
+          len_H2 = size(dp_H2,1)
+          state_cp(4,:) = dp_H2(len_H2,:)
+          
+          ! === END OF THE PROPAGATION ===
+          
+        end if
         
         ! ======================================================================
         ! 07. PROCESS AND SAVE OUTPUT
         ! ======================================================================
         
+        ! If n_rs == 0 (HELIO mode) then ind_in = len_H1 = size(dp_H1,1).
         ind_in = len_H1
         ind_out = len_H1 + len_CE - 1
         
@@ -361,8 +379,10 @@ d_loop: do i_d = 1,n_d
         allocate(dp_full(1:lenref,1:7))
         if (integ == 1) then
           dp_full(1:ind_in,:) = dp_H1(1:len_H1,:)
-          dp_full(ind_in+1:ind_out,:) = dp_CE(2:len_CE,:)
-          dp_full(ind_out+1:lenref,:) = dp_H2(2:len_H2,:)
+          if (n_rs /= 0) then
+            dp_full(ind_in+1:ind_out,:) = dp_CE(2:len_CE,:)
+            dp_full(ind_out+1:lenref,:) = dp_H2(2:len_H2,:)
+          end if
         end if
         
         ! Save checkpoint values of the reference trajectories
@@ -370,8 +390,9 @@ d_loop: do i_d = 1,n_d
         state_cp_ref(2,:) = ref_traj(ind_in_ref,:)
         state_cp_ref(3,:) = ref_traj(ind_out_ref,:)
         state_cp_ref(4,:) = ref_traj(lenref,:)
+        ncheck = 3
         
-        call RESIDUALS(3,state_cp_ref(2:4,:),state_cp(2:4,:),smaEarth,muSun,&
+        call RESIDUALS(ncheck,state_cp_ref(2:4,:),state_cp(2:4,:),smaEarth,muSun,&
         &RSw_arr(l_r),dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,dSMA_abs,RSw_eff,RSw_diff)
         
         ! OUTPUT RESIDUALS

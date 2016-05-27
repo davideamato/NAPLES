@@ -58,7 +58,12 @@ write(*,'(a16,i4)') 'd points: ',n_d
 write(*,'(a16,i4)') 'e points: ', n_e
 write(*,'(a16,i4)') 'theta points: ', n_th
 write(*,'(a16,i4)') 'R_Sw points: ', n_rs
-write(*,'(a16,i10,/)') 'Total: ',n_d*n_e*n_th*n_rs
+write(*,'(a16,i10,/)') 'Total: ',n_d*n_e*n_th*maxval([n_rs,1])
+if (n_rs == 0) then
+  write(*,'(a16,a)') 'Mode: ','HELIO'
+else if (n_rs > 0) then
+  write(*,'(a16,a)') 'Prop mode: ','OTM'
+end if
 select case(espacing)
 case(1)
     write(*,'(a16,a)') 'e spacing: ','  Linear'
@@ -203,6 +208,11 @@ case(1)
 case(2)
   write(id_set,'(a16,a)') 'Integrator ','  Radau'
 end select
+if (n_rs == 0) then
+  write(id_set,'(a16,a)') 'Prop. mode: ','HELIO'
+else if (n_rs > 0) then
+  write(id_set,'(a16,a)') 'Prop. mode: ','OTM'
+end if
 write(id_set,'(a16,g14.7)') 'Ref. tol: ', tolref
 write(id_set,'(a16,g14.7)') 'Test tol: ', tol
 write(id_set,'(a16,g14.7,a)') 'dt_H: ', dt_H,' days'
@@ -364,6 +374,7 @@ subroutine WRITE_RESULTS(i,j,k,l,dmin,ecc,theta,RSw,&
 &dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,dSMA_abs,RSw_diff,MF,XC,callsArr,istepsArr,&
 &mordArr,calls_end,mord_end,isteps_end)
 
+use SETTINGS, only: n_rs
 implicit none
 ! Arguments IN
 integer,intent(in)   ::  i,j,k,l
@@ -371,19 +382,33 @@ integer,intent(in)   ::  MF(1:3),XC,callsArr(1:2),calls_end,istepsArr(1:2),istep
 real(qk),intent(in)  ::  dmin,ecc,theta,RSw
 real(dk),intent(in)  ::  RSw_diff,dR_abs(1:3),dR_rel(1:3),dV_abs(1:3),dV_rel(1:3)
 real(dk),intent(in)  ::  dEn_rel(1:3),dSMA_abs(1:3),mordArr(1:2),mord_end
+! Format strings
+character(len=*),parameter  :: fmt_en = '(4(i3,'',''),4(g14.7,'',''),3(es14.7,'',''),3i1,'','',i3.3)'
+character(len=*),parameter  :: fmt_ar = '(4(i3,'',''),4(g14.7,'',''),6(es14.7,'',''),3i1,'','',i3.3)'
+character(len=*),parameter  :: fmt_st = '(4(i3,'',''),4(g14.7,'',''),3(i9,'',''),3(g14.7,'',''),'//&
+&'3(i10,'',''),g14.7,'','',3i1,'','',i3.3)'
+character(len=*),parameter  :: fmt_enH = '(4(i3,'',''),4(g14.7,'',''),2(a14,'',''),es14.7,'','',3i1,'','',i3.3)'
+character(len=*),parameter  :: fmt_arH = '(4(i3,'',''),4(g14.7,'',''),2(2(a14,'',''),es14.7,'',''),3i1,'','',i3.3)'
+character(len=*),parameter  :: fmt_stH = '(4(i3,'',''),4(g14.7,'',''),2(a9,'',''),i9,'','',2(a14,'',''),g14.7,'','','//&
+&'2(a10,'',''),i10,'','',g14.7,'','',3i1,'','',i3.3)'
+character(len=3),parameter  :: nans(1:2) = ['NaN','NaN']
 
-write(id_enres,'(4(i3,'',''),4(g14.7,'',''),3(es14.7,'',''),3i1,'','',i3.3)')&
-& i,j,k,l,dmin,ecc,theta,RSw,dEn_rel,MF,XC
-write(id_ares,'(4(i3,'',''),4(g14.7,'',''),6(es14.7,'',''),3i1,'','',i3.3)')&
-& i,j,k,l,dmin,ecc,theta,RSw,dR_abs,dV_abs,MF,XC
-write(id_rres,'(4(i3,'',''),4(g14.7,'',''),6(es14.7,'',''),3i1,'','',i3.3)')&
-& i,j,k,l,dmin,ecc,theta,RSw,dR_rel,dV_rel,MF,XC
-write(id_sma,'(4(i3,'',''),4(g14.7,'',''),3(es14.7,'',''),3i1,'','',i3.3)')&
-& i,j,k,l,dmin,ecc,theta,RSw,dSMA_abs,MF,XC
-write(id_stats,&
-&'(4(i3,'',''),4(g14.7,'',''),3(i9,'',''),3(g14.7,'',''),3(i10,'',''),g14.7,'','',3i1,'','',i3.3)')&
-&i,j,k,l,dmin,ecc,theta,RSw,callsArr,calls_end,mordArr,mord_end,istepsArr,isteps_end,RSw_diff,MF,XC
-
+if (n_rs /= 0) then
+  write(id_enres,fmt_en) i,j,k,l,dmin,ecc,theta,RSw,dEn_rel,MF,XC
+  write(id_ares,fmt_ar)  i,j,k,l,dmin,ecc,theta,RSw,dR_abs,dV_abs,MF,XC
+  write(id_rres,fmt_ar)  i,j,k,l,dmin,ecc,theta,RSw,dR_rel,dV_rel,MF,XC
+  write(id_sma,fmt_en)   i,j,k,l,dmin,ecc,theta,RSw,dSMA_abs,MF,XC
+  write(id_stats,fmt_st)&
+  &i,j,k,l,dmin,ecc,theta,RSw,callsArr,calls_end,mordArr,mord_end,istepsArr,isteps_end,RSw_diff,MF,XC
+  
+else
+  write(id_enres,fmt_enH) i,j,k,l,dmin,ecc,theta,RSw,nans,dEn_rel(3),MF,XC
+  write(id_ares,fmt_arH)  i,j,k,l,dmin,ecc,theta,RSw,nans,dR_abs(3),nans,dV_abs(3),MF,XC
+  write(id_rres,fmt_arH)  i,j,k,l,dmin,ecc,theta,RSw,nans,dR_rel(3),nans,dV_rel(3),MF,XC
+  write(id_stats,fmt_stH)&
+  &i,j,k,l,dmin,ecc,theta,RSw,nans,calls_end,nans,mord_end,nans,isteps_end,RSw_diff,MF,XC
+  
+end if
 
 end subroutine WRITE_RESULTS
 
@@ -411,3 +436,20 @@ end subroutine WRITE_EXCEPTION
 
 
 end module IO
+
+! ===========================
+! ======== GARBAGE ==========
+! ===========================
+
+!write(id_enres,'(4(i3,'',''),4(g14.7,'',''),3(es14.7,'',''),3i1,'','',i3.3)')&
+!& i,j,k,l,dmin,ecc,theta,RSw,dEn_rel,MF,XC
+!write(id_ares,'(4(i3,'',''),4(g14.7,'',''),6(es14.7,'',''),3i1,'','',i3.3)')&
+!& i,j,k,l,dmin,ecc,theta,RSw,dR_abs,dV_abs,MF,XC
+!write(id_rres,'(4(i3,'',''),4(g14.7,'',''),6(es14.7,'',''),3i1,'','',i3.3)')&
+!& i,j,k,l,dmin,ecc,theta,RSw,dR_rel,dV_rel,MF,XC
+!write(id_sma,'(4(i3,'',''),4(g14.7,'',''),3(es14.7,'',''),3i1,'','',i3.3)')&
+!& i,j,k,l,dmin,ecc,theta,RSw,dSMA_abs,MF,XC
+!write(id_stats,&
+!&'(4(i3,'',''),4(g14.7,'',''),3(i9,'',''),3(g14.7,'',''),3(i10,'',''),g14.7,'','',3i1,'','',i3.3)')&
+!&i,j,k,l,dmin,ecc,theta,RSw,callsArr,calls_end,mordArr,mord_end,istepsArr,isteps_end,RSw_diff,MF,XC
+

@@ -25,8 +25,6 @@ real(qk),allocatable,intent(out)   ::  Yt(:,:)    ! Trajectory array [km,s]
 real(qk),intent(out)     ::  JD_sw                      ! Switch time [days]
 integer(ik),intent(out)  ::  ind_sw                     ! Index of switch time
 integer(ik),intent(out)  ::  istate                     ! Integration diagnostics
-! Times
-!real(qk)  ::  dt_helio,dt_geo
 ! States and trajectories
 real(qk)              ::  R_helio(1:3),V_helio(1:3)
 real(qk)              ::  R_geo(1:3),V_geo(1:3)

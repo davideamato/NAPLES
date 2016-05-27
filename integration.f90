@@ -166,8 +166,9 @@ case (1)
   meth_switch = .false.
   next_t = .false.
   
-  ! If the formulation uses a fictitious time, the exit condition must be found
-  ! through root-finding.
+  ! The exit condition is always found by root-finding, also for Cowell. This
+  ! greatly simplifies implementation since in general we use 4 (slightly)
+  ! different time steps due to the backwards propagation.
   nevts = 2
   if (allocated(jroot)) deallocate(jroot)
   allocate(jroot(1:nevts)); jroot = 0
