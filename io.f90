@@ -177,7 +177,7 @@ character(len=*),intent(in)  ::  pathname,runID
 open(id_set,file=pathname,status='replace',action='write')
 
 write(id_set,'(120(''#''))')
-write(id_set,'(2(''#''),55x,a7,54x,2(''#''))') 'NACE'
+write(id_set,'(2(''#''),55x,a7,54x,2(''#''))') 'NAPLES'
 write(id_set,'(2(''#''),49x,a19,48x,2(''#''))') 'SIMULATION SETTINGS'
 write(id_set,'(120(''#''),/)')
 
@@ -256,7 +256,7 @@ character(len=*),intent(in)    ::  pathname,runID
 
 open(unit=id_enres,file=pathname,status='replace',action='write')
 write(id_enres,'(120(''#''))')
-write(id_enres,'(2(''#''),55x,a7,54x,2(''#''))') 'NACE'
+write(id_enres,'(2(''#''),55x,a7,54x,2(''#''))') 'NAPLES'
 write(id_enres,'(2(''#''),50x,a16,50x,2(''#''))') 'ENERGY RESIDUALS'
 write(id_enres,'(120(''#''),/,''#'')')
 
@@ -278,7 +278,7 @@ character(len=*),intent(in)    ::  pathname,runID
 
 open(unit=id_ares,file=pathname,status='replace',action='write')
 write(id_ares,'(120(''#''))')
-write(id_ares,'(2(''#''),55x,a7,54x,2(''#''))') 'NACE'
+write(id_ares,'(2(''#''),55x,a7,54x,2(''#''))') 'NAPLES'
 write(id_ares,'(2(''#''),38x,a40,38x,2(''#''))') 'ABSOLUTE POSITION AND VELOCITY RESIDUALS'
 write(id_ares,'(120(''#''),/,''#'')')
 
@@ -301,7 +301,7 @@ character(len=*),intent(in)    ::  pathname,runID
 
 open(unit=id_rres,file=pathname,status='replace',action='write')
 write(id_rres,'(120(''#''))')
-write(id_rres,'(2(''#''),55x,a7,54x,2(''#''))') 'NACE'
+write(id_rres,'(2(''#''),55x,a7,54x,2(''#''))') 'NAPLES'
 write(id_rres,'(2(''#''),38x,a40,38x,2(''#''))') 'RELATIVE POSITION AND VELOCITY RESIDUALS'
 write(id_rres,'(120(''#''),/,''#'')')
 
@@ -324,7 +324,7 @@ character(len=*),intent(in)    ::  pathname,runID
 
 open(unit=id_stats,file=pathname,status='replace',action='write')
 write(id_stats,'(120(''#''))')
-write(id_stats,'(2(''#''),55x,a7,54x,2(''#''))') 'NACE'
+write(id_stats,'(2(''#''),55x,a7,54x,2(''#''))') 'NAPLES'
 write(id_stats,'(2(''#''),47x,a22,47x,2(''#''))') 'INTEGRATION STATISTICS'
 write(id_stats,'(120(''#''),/,''#'')')
 

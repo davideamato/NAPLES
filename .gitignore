@@ -1,4 +1,9 @@
-# Ignore gfortran object files
+# Compiled files
 *.o
-# Ignore gfortran module files
+*.x
+# Fortran module files
 *.mod
+# Outputs
+*.log
+*.dat
+fort.*

@@ -1,5 +1,5 @@
-program NACE
-! Description: program NACE (Numerical Analysis of Close Encounters).
+program NAPLES
+! Description: program NAPLES (Numerical Analysis of Planetary EncounterS).
 ! Propagates orbits in the Earth-Sun circular, restricted three-body problem 
 ! starting from initial conditions assigned at the minimum approach distance. 
 ! The initial conditions are parametrized in (d,e,theta), and a change of 
@@ -81,7 +81,7 @@ character(len=4096)          ::  ppath
 integer  ::  ii
 
 write(*,'(80(''*''))')
-write(*,'(''*'',35x,a7,36x,''*'')') 'NACE'
+write(*,'(''*'',35x,a7,36x,''*'')') 'NAPLES'
 write(*,'(''*'',19x,a39,20x,''*'')') 'Numerical Analysis of Close Encounters.'
 write(*,'(80(''*''))')
 
@@ -475,7 +475,7 @@ subroutine FLUSHO()
 
 end subroutine FLUSHO
 
-end program NACE
+end program NAPLES
 
 !do ii=1,lenref
 !  write(52,'(7(es22.15,'',''))') dp_traj(ii,1:7)

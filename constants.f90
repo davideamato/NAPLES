@@ -1,7 +1,7 @@
 MODULE CONSTANTS
     
     ! Description:
-    !    Contains physical constants for the program NACE.
+    !    Contains physical constants for the program NAPLES.
     ! 
     ! Author:
     !    Davide Amato

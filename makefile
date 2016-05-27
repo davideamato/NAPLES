@@ -6,11 +6,11 @@ EVENTS = evts_cowell.o evts_ks.o evts_edromo.o evts_gdromo.o
 OBJECTS = kinds.o constants.o io.o settings.o \
 auxiliaries.o third_bodies.o state_init.o transform.o processing.o \
 propagate_cowell.o reference_trajectory.o integration.o dp_trajectory.o \
-everhart.o $(DLSODAR) $(SLSODAR) $(EQUATIONS) $(EVENTS) NACE.o
+everhart.o $(DLSODAR) $(SLSODAR) $(EQUATIONS) $(EVENTS) NAPLES.o
 
 # Main target - binary
-NACE.x: NACE.f90 $(OBJECTS)
-	gfortran -o NACE.x -g -fcheck=bounds  $(OBJECTS)
+NAPLES.x: NAPLES.f90 $(OBJECTS)
+	gfortran -o NAPLES.x -g -fcheck=bounds  $(OBJECTS)
 
 # OBJECT FILES
 kinds.o: kinds.f90
@@ -90,9 +90,9 @@ transform.o $(SLSODAR) everhart.o
 io.o: io.f90 kinds.o settings.o
 	gfortran -c io.f90 -g -fcheck=bounds 
 
-NACE.o: NACE.f90 kinds.o constants.o io.o settings.o auxiliaries.o io.o \
+NAPLES.o: NAPLES.f90 kinds.o constants.o io.o settings.o auxiliaries.o io.o \
 reference_trajectory.o dp_trajectory.o processing.o third_bodies.o
-	gfortran -c NACE.f90 -g -fcheck=bounds 
+	gfortran -c NAPLES.f90 -g -fcheck=bounds 
 
 
 # LSODAR - DOUBLE PRECISION:
