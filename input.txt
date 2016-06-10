@@ -8,9 +8,9 @@
 # e_int      Interval of hyperbolic eccentricities  [-]
 # th0_int    Interval of initial longitudes         [deg]
 # Rsw_int    Interval of switch radii               [AU]
-d_int:       1.E0                  ,20.E0                 
-e_int:       1.01E0                ,15.E0                 
-th0_int:     30.E0                 ,90.E0     
+d_int:       8.E0                  ,20.E0                 
+e_int:       8.00E0                ,15.E0                 
+th0_int:     0.E0                  ,360.E0     
 Rsw_int:     0.00618088574537262   ,0.00618088574537262
 
 # MESH SETTINGS
@@ -19,10 +19,10 @@ Rsw_int:     0.00618088574537262   ,0.00618088574537262
 # n_th       Number of simulations in theta0
 # n_rs       Number of simulations in R_Sw
 # espacing   Spacing in e. 1 = linear, 2 = log     
-n_d:         10
-n_e:         10
-n_th:        2           
-n_rs:        0
+n_d:         100
+n_e:         100
+n_th:        100           
+n_rs:        1
 espacing:    1
 
 # INTEGRATOR SETTINGS
@@ -34,7 +34,7 @@ espacing:    1
 # mxsteps:   Maximum number of steps taken in the propagations (> 1k recommended)
 integ:       1
 tolref:      1.E-23                
-tol:         1.E-15
+tol:         1.E-12
 dt_H:        10.E0
 dt_CE:       0.5E0
 mxsteps:     100000        

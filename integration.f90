@@ -5,8 +5,8 @@ implicit none
 
 contains
 
-subroutine DINTEGRATE(DRHS_T1,DRHS_T2,DEVT,X_i,Xdot_i,s_i,neq,JD_f,eqs,integ,&
-&tol,Yt,idiag,rdiag)
+subroutine DINTEGRATE(DRHS_T1,DRHS_T2,DEVT,X_i,Xdot_i,s_i,ds_i,neq,JD_f,eqs,&
+&integ,tol,Yt,idiag,rdiag)
 ! Integrates the equations of motion starting from initial values of the state
 ! vector and independent variable "X_i, s_i" until time "JD_stop".
 ! It chooses between LSODAR and Radau as integrators and uses any of the
@@ -28,7 +28,7 @@ use EVERHART,    only: RADAU_ON,RA15,RADAU_OFF
 implicit none
 ! Arguments IN
 integer,intent(in)    ::  neq,eqs,integ
-real(dk),intent(in)   ::  X_i(1:neq),Xdot_i(1:neq),s_i,tol,JD_f
+real(dk),intent(in)   ::  X_i(1:neq),Xdot_i(1:neq),s_i,ds_i,tol,JD_f
 ! Arguments OUT       
 integer,intent(out)   ::  idiag(:)
 real(dk),intent(out),allocatable  ::  Yt(:,:)
@@ -155,11 +155,10 @@ case (1)
   ! Initialize LSODAR settings and diagnostics
   istate = 1; iwork = 0; rwork = 0._dk; sum_ord = 0._dk
   
+  ! Set maximum number of integration steps per output step and initial
+  ! step size
   iwork(6) = 2000
-  ! Set a small initial stepsize (LSODAR will reduce it if it's too big). Also
-  ! set the max number of function evaluations and the event functions
-  rwork(5) = 1.E-9_dk
-!  rwork(5) = 0.1_dk
+  rwork(5) = ds_i
   
   ! Set counter and method switch flag
   intstep = 0
@@ -234,7 +233,7 @@ case (2)
   ! TEMPORARY: ONLY WORKS FOR COWELL TYPE 2 EQS. (eqs = -1)
   ! NO INTERPOLATION.
   s_end = JD_f*secsPerDay*TU
-  h0 = 0.1_dk
+  h0 = ds_i
   mip = -1
   idiag = 0; rdiag = 0._dk
   

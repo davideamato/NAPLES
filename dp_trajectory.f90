@@ -23,6 +23,7 @@ use EVTS_KS,      only: DKS_EVT
 use EVTS_EDROMO,  only: DEDROMO_EVT
 use EVTS_GDROMO,  only: DGDROMO_EVT
 use INTEGRATION,  only: DINTEGRATE
+use STEPSIZES,    only: DSTEPSIZE
 use THIRDBODIES,  only: QPOS_VEL_CIRC
 
 ! VARIABLES
@@ -38,7 +39,7 @@ integer,intent(out)  ::  idiag(:)
 real(dk),intent(out) ::  rdiag(:)
 ! States and trajectories
 real(dk),allocatable ::  X_i(:),Xdot_i(:)
-real(dk)             ::  s_i
+real(dk)             ::  s_i,ds_i
 real(dk)             ::  t_D,r_helio(1:3),v_helio(1:3)
 ! Integrator settings - LSODAR
 integer  ::  neq
@@ -108,6 +109,8 @@ if (allocated(Xdot_i)) deallocate(Xdot_i)
 ! 3: EDromo
 ! 4: GDromo
 
+ds_i = DSTEPSIZE((R_i/DU),(V_i/(DU*TU)),1._qk,DU,eqs)
+
 ! (A): STATE VECTOR AND INDEPENDENT VARIABLE INITIALIZATION
 ! (B): INTEGRATION LOOP
 select case (eqs)
@@ -121,8 +124,8 @@ case(-1) ! ONLY RADAU: 3 2nd-order equations
   s_i = JD_i*secsPerDay*TU
   
   ! (B)
-  call DINTEGRATE(FAKE_RHS_T1,DCOWELL_RHS_T2,DCOWELL_EVT,X_i,Xdot_i,s_i,neq,&
-  &real(JD_f,dk),eqs,integ,tol,Yt,idiag,rdiag)
+  call DINTEGRATE(FAKE_RHS_T1,DCOWELL_RHS_T2,DCOWELL_EVT,X_i,Xdot_i,s_i,ds_i,&
+  &neq,real(JD_f,dk),eqs,integ,tol,Yt,idiag,rdiag)
 
 case (1)
     
@@ -135,7 +138,7 @@ case (1)
   s_i = JD_i*secsPerDay*TU
   
   ! (B)
-  call DINTEGRATE(DCOWELL_RHS,FAKE_RHS_T2,DCOWELL_EVT,X_i,Xdot_i,s_i,neq,&
+  call DINTEGRATE(DCOWELL_RHS,FAKE_RHS_T2,DCOWELL_EVT,X_i,Xdot_i,s_i,ds_i,neq,&
   &real(JD_f,dk),eqs,integ,tol,Yt,idiag,rdiag)
 
 case (2)
@@ -150,8 +153,8 @@ case (2)
   s_i = DFTIME_2D(R_i,V_i,mu)
   
   ! (B)
-  call DINTEGRATE(DKS_RHS,FAKE_RHS_T2,DKS_EVT,X_i,Xdot_i,s_i,neq,real(JD_f,dk),&
-      &eqs,integ,tol,Yt,idiag,rdiag)
+  call DINTEGRATE(DKS_RHS,FAKE_RHS_T2,DKS_EVT,X_i,Xdot_i,s_i,ds_i,neq,&
+      &real(JD_f,dk),eqs,integ,tol,Yt,idiag,rdiag)
 
 case (3)
   ! (A)
@@ -168,7 +171,7 @@ case (3)
   end if
   
   ! (B)
-  call DINTEGRATE(DEDROMO_RHS,FAKE_RHS_T2,DEDROMO_EVT,X_i,Xdot_i,s_i,neq,&
+  call DINTEGRATE(DEDROMO_RHS,FAKE_RHS_T2,DEDROMO_EVT,X_i,Xdot_i,s_i,ds_i,neq,&
       &real(JD_f,dk),eqs,integ,tol,Yt,idiag,rdiag)
   
 case (4)
@@ -186,7 +189,7 @@ case (4)
   end if
   
   ! (B)
-  call DINTEGRATE(DGDROMO_RHS,FAKE_RHS_T2,DGDROMO_EVT,X_i,Xdot_i,s_i,neq,&
+  call DINTEGRATE(DGDROMO_RHS,FAKE_RHS_T2,DGDROMO_EVT,X_i,Xdot_i,s_i,ds_i,neq,&
       &real(JD_f,dk),eqs,integ,tol,Yt,idiag,rdiag)
   
 end select

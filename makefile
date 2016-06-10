@@ -5,8 +5,8 @@ EVENTS = evts_cowell.o evts_ks.o evts_edromo.o evts_gdromo.o
 
 OBJECTS = kinds.o constants.o io.o settings.o \
 auxiliaries.o third_bodies.o state_init.o transform.o processing.o \
-propagate_cowell.o reference_trajectory.o integration.o dp_trajectory.o \
-everhart.o $(DLSODAR) $(SLSODAR) $(EQUATIONS) $(EVENTS) NAPLES.o
+propagate_cowell.o reference_trajectory.o integration.o step_sizes.o \
+dp_trajectory.o everhart.o $(DLSODAR) $(SLSODAR) $(EQUATIONS) $(EVENTS) NAPLES.o
 
 # Main target - binary
 NAPLES.x: NAPLES.f90 $(OBJECTS)
@@ -71,6 +71,9 @@ evts_gdromo.o: evts_gdromo.f90 kinds.o auxiliaries.o constants.o settings.o
 
 # PROPAGATION, MISC
 
+step_sizes.o: step_sizes.f90 kinds.o constants.o
+	gfortran -c step_sizes.f90 -g -fcheck=bounds 
+
 propagate_cowell.o: propagate_cowell.f90 kinds.o constants.o\
 eqs_cowell.o evts_cowell.o settings.o auxiliaries.o third_bodies.o $(DLSODAR)
 	gfortran -c propagate_cowell.f90 -g -fcheck=bounds 
@@ -80,7 +83,8 @@ settings.o propagate_cowell.o auxiliaries.o
 	gfortran -c reference_trajectory.f90 -g -fcheck=bounds 
 
 dp_trajectory.o: dp_trajectory.f90 kinds.o constants.o \
-state_init.o settings.o integration.o auxiliaries.o $(EQUATIONS) $(EVENTS)
+state_init.o settings.o integration.o auxiliaries.o step_sizes.o $(EQUATIONS) \
+$(EVENTS)
 	gfortran -c dp_trajectory.f90 -g -fcheck=bounds 
 
 integration.o: integration.f90 kinds.o auxiliaries.o settings.o constants.o \
