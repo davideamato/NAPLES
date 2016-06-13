@@ -109,7 +109,7 @@ if (allocated(Xdot_i)) deallocate(Xdot_i)
 ! 3: EDromo
 ! 4: GDromo
 
-ds_i = DSTEPSIZE((R_i/DU),(V_i/(DU*TU)),1._qk,DU,eqs)
+ds_i = DSTEPSIZE((R_i/DU),(V_i/(DU*TU)),1._qk,DU,eqs,inSoI,tol)
 
 ! (A): STATE VECTOR AND INDEPENDENT VARIABLE INITIALIZATION
 ! (B): INTEGRATION LOOP

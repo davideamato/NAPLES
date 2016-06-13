@@ -7,7 +7,7 @@ implicit none
 contains
 
 
-function DSTEPSIZE(R,V,mu,DU,eqs)
+function DSTEPSIZE(R,V,mu,DU,eqs,inSoI,tol)
 ! Choose the initial stepsize according to the formulation and the sign of the
 ! orbital energy.
 ! 
@@ -19,7 +19,9 @@ use CONSTANTS, only: twopi,pi,smaEarth,TU
 ! VARIABLES
 ! Arguments
 real(qk),intent(in)  ::  R(1:3),V(1:3),mu,DU
+real(dk),intent(in)  ::  tol
 integer,intent(in)   ::  eqs
+logical,intent(in)   ::  inSoI
 ! Function definition
 real(dk)  ::  DSTEPSIZE
 ! Angular momentum, energy, sma, eccentricity, semi-parameter
@@ -61,8 +63,12 @@ if (En < 0._dk) then
   DSTEPSIZE = ell/nell
   
 else
-  ! Set rlim = 0.1 AU
-  rlim = 0.1_dk*(smaEarth/DU)
+  if (inSoI) then
+    ! Set rlim = 0.1 AU
+    rlim = 0.1_dk*(smaEarth/DU)
+  else
+    rlim = 5._dk*(smaEarth/DU)
+  end if
   
   ! Limiting true anomaly "fplus" corresponding to the point on the
   ! hyperbola at a distance "rlim" away from the primary, 0 <= fplus <= pi.
@@ -104,6 +110,7 @@ else
   
 end if
 
+DSTEPSIZE = -DSTEPSIZE/log10(tol)
 
 end function DSTEPSIZE
 
