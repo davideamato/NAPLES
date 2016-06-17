@@ -68,6 +68,7 @@ integer   ::  XC,MF(1:3)
 integer   ::  callsArr(1:2),calls_end,istepsArr(1:2),isteps_end
 real(dk)  ::  mordArr(1:2),mord_end
 integer   ::  ncheck
+logical   ::  sanity
 ! CPU time
 real(dk)  ::  cputime_start,cputime_end
 ! Auxiliary variables
@@ -377,6 +378,11 @@ d_loop: do i_d = 1,n_d
         ! Temporary fix: only if integ == 1
         if (allocated(dp_full)) deallocate(dp_full)
         allocate(dp_full(1:lenref,1:7))
+        ! Sanity check on the length of the trajectories
+        if ( (len_H1 + len_CE + len_H2 - 2 /= lenref)) then
+          sanity = EXCEPTION_CHECK(-13,3)
+          cycle RSw_loop
+        end if
         if (integ == 1) then
           dp_full(1:ind_in,:) = dp_H1(1:len_H1,:)
           if (n_rs /= 0) then
