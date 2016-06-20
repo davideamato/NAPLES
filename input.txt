@@ -22,7 +22,7 @@ Rsw_int:     0.00123617714907452   ,0.0494470859629809
 n_d:         50
 n_e:         50
 n_th:        9           
-n_rs:        50
+n_rs:        0
 espacing:    1
 
 # INTEGRATOR SETTINGS
@@ -43,8 +43,8 @@ mxsteps:     100000
 # eqs:       -1 = Cowell (II), 1 = Cowell (I), 2 = K-S, 3 = EDromo, 4 = GDromo.
 # The choices 3 (EDromo) and 4 (GDromo) are valid only in the heliocentric and
 # close encounter phases respectively. The choice -1 is only valid for integ = 2.
-eqs_H:       3
-eqs_CE:      2
+eqs_H:       1
+eqs_CE:      1
 
 # REGULARIZED FORMULATION SETTINGS
 # ftime_EDr: Type of EDromo time element. 0 = physical time, 1 = Constant Time Element,
@@ -55,4 +55,4 @@ ftime_EDr:   1
 ftime_GDr:   1
 
 # OUTPUT PATH (must be an existing directory)
-path:        /home/davide/raw/NAPLES/
+path:        /home/davide/raw/NAPLES_validation/

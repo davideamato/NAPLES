@@ -176,6 +176,8 @@ else if (totsim > 10000 .and. totsim < 1000000) then
 else
   step_mess = 1000
 end if
+lenref = 0;
+len_H1 = 0; len_CE = 0; len_H2 = 0 
 
 d_loop: do i_d = 1,n_d
   
@@ -379,7 +381,7 @@ d_loop: do i_d = 1,n_d
         if (allocated(dp_full)) deallocate(dp_full)
         allocate(dp_full(1:lenref,1:7))
         ! Sanity check on the length of the trajectories
-        if ( (len_H1 + len_CE + len_H2 - 2 /= lenref)) then
+        if ( (len_H1 + len_CE + len_H2 - 2 /= lenref) .and. n_rs /= 0) then
           sanity = EXCEPTION_CHECK(-13,3)
           cycle RSw_loop
         end if
