@@ -1,12 +1,12 @@
 DLSODAR = opkda1.o opkda2.o opkdmain.o
 SLSODAR = opksa1.o opksa2.o opksmain.o
 EQUATIONS = eqs_cowell.o eqs_ks.o eqs_edromo.o eqs_gdromo.o
-EVENTS = evts_cowell.o evts_ks.o evts_edromo.o evts_gdromo.o
+EVENTS = evts_cowell.o evts_ks.o evts_edromo.o evts_gdromo.o sundman.o
 
 OBJECTS = kinds.o constants.o io.o settings.o \
 auxiliaries.o third_bodies.o state_init.o transform.o processing.o \
 propagate_cowell.o reference_trajectory.o integration.o step_sizes.o \
-dp_trajectory.o everhart.o $(DLSODAR) $(SLSODAR) $(EQUATIONS) $(EVENTS) NAPLES.o
+dp_trajectory.o xeverhart.o $(DLSODAR) $(SLSODAR) $(EQUATIONS) $(EVENTS) NAPLES.o
 
 # Main target - binary
 NAPLES.x: NAPLES.f90 $(OBJECTS)
@@ -38,7 +38,10 @@ transform.o: transform.f90 kinds.o
 	gfortran -c transform.f90 -g -fcheck=bounds 
 
 processing.o: processing.f90 kinds.o
-	gfortran -c processing.f90 -g -fcheck=bounds 
+	gfortran -c processing.f90 -g -fcheck=bounds
+
+sundman.o: sundman.f90 kinds.o settings.o transform.o
+	gfortran -c sundman.f90 -g -fcheck=bounds
 
 # EQUATIONS OF MOTION
 eqs_cowell.o: eqs_cowell.f90 kinds.o constants.o third_bodies.o auxiliaries.o
@@ -56,7 +59,6 @@ constants.o auxiliaries.o
 	gfortran -c eqs_gdromo.f90 -g -fcheck=bounds 
 
 # EVENTS
-
 evts_cowell.o: evts_cowell.f90 kinds.o constants.o
 	gfortran -c evts_cowell.f90 -g -fcheck=bounds 
 
@@ -70,7 +72,6 @@ evts_gdromo.o: evts_gdromo.f90 kinds.o auxiliaries.o constants.o settings.o
 	gfortran -c evts_gdromo.f90 -g -fcheck=bounds 
 
 # PROPAGATION, MISC
-
 step_sizes.o: step_sizes.f90 kinds.o constants.o
 	gfortran -c step_sizes.f90 -g -fcheck=bounds 
 
@@ -88,7 +89,7 @@ $(EVENTS)
 	gfortran -c dp_trajectory.f90 -g -fcheck=bounds 
 
 integration.o: integration.f90 kinds.o auxiliaries.o settings.o constants.o \
-transform.o $(SLSODAR) everhart.o
+transform.o $(SLSODAR) xeverhart.o
 	gfortran -c integration.f90 -g -fcheck=bounds 
 
 io.o: io.f90 kinds.o settings.o
@@ -121,8 +122,11 @@ opkdmain.o: LSODAR/opkdmain.f opkda1.o opkda2.o
 	gfortran -c LSODAR/opkdmain.f -g -fdefault-real-8 -std=legacy
 
 # RADAU
-everhart.o: everhart.f90 kinds.o
-	gfortran -c everhart.f90 -g -fcheck=bounds 
+#everhart.o: everhart.f90 kinds.o
+#	gfortran -c everhart.f90 -g -fcheck=bounds
+
+xeverhart.o: xeverhart.f90 kinds.o sundman.o
+	gfortran -c xeverhart.f90 -g -fcheck=bounds 
 
 .PHONY: clean
 clean:

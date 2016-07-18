@@ -69,19 +69,20 @@ external SLSODAR
 !
 ! idiag:        integration diagnostics (integer).
 !   (1):        total number of evaluations of the RHS.
-!   (2):        for LSODAR, istate at the end of propagation.
-!   (3):        for LSODAR, total number of internal integration steps.
+!   (2):        istate at the end of propagation. Check the meaning of istate
+!               in integration.f90, opksmain.f90, xeverhart.f90.
+!   (3):        total number of internal integration steps.
 ! 
 ! rdiag:        integration diagnostics (real).
 !   (1):        for LSODAR, value of time (JD) which the first method
 !               switch to BDF was detected.
-!   (2):        for LSODAR, average order of integration. The order is averaged
+!   (2):        Average order of integration. The order is averaged
 !               over the output steps instead of the internal integration steps.
 !               Thus, the average could be unreliable for a small number of
-!               output steps.
-!   (3):        in case in which an exception was detected, rdiag(3) is the
-!               last value of the physical time at which the integration was
-!               successful.
+!               output steps. For XRA15 rdiag(2) = 15.
+!   (3):        for LSODAR, in case in which an exception was detected, rdiag(3)
+!               is the last value of the physical time at which the integration
+!               was successful.
 
 
 ! ==============================================================================
@@ -128,7 +129,6 @@ case(-1) ! ONLY RADAU: 3 2nd-order equations
   &neq,real(JD_f,dk),eqs,integ,tol,Yt,idiag,rdiag)
 
 case (1)
-    
   ! LSODAR/Radau: 6 1st-order equations
   ! (A)
   ! Initialize state vector and independent var.
@@ -223,7 +223,3 @@ end subroutine FAKE_EVT
 end subroutine DP_TRAJECTORY
 
 end module TEST_PROP
-
-!write(*,*) 'DP_TRAJECTORY: JD_i = ',JD_i*86400._qk
-!write(*,*) 'DP_TRAJECTORY: R_i = ',R_i
-!write(*,*) 'DP_TRAJECTORY: V_i = ',V_i

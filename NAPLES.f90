@@ -59,7 +59,7 @@ real(dk)  ::  dR_abs(1:3),dR_rel(1:3),dV_abs(1:3),dV_rel(1:3)
 real(dk)  ::  dEn_rel(1:3),dSMA_abs(1:3)
 ! Sanity checks, settings and diagnostics
 integer   ::  istate_bwd,istate_fwd,istate_curr
-integer   ::  idiag(1:3)
+integer   ::  idiag(1:10)
 real(dk)  ::  rdiag(1:3)
 integer   ::  totsim,step_mess,i_fail
 integer   ::  eqs
@@ -93,7 +93,7 @@ write(*,'(80(''*''))')
 ! ==============================================================================
 
 call READ_SETTINGS()
-write(*,'(/,a)') 'Press any key to continue... '
+write(*,'(/,a)') 'Press ENTER to continue... '
 read(*,*)
 
 call DATE_AND_TIME(date,time)
@@ -268,7 +268,7 @@ d_loop: do i_d = 1,n_d
         ! This is for output by LSODAR in the test propagation.
         if (allocated(time_steps)) deallocate(time_steps)
         allocate(time_steps(1:lenref),source=ref_traj(:,1))
-        
+
         ! ======================================================================
         ! 06. TEST PROPAGATION
         ! ======================================================================
@@ -323,7 +323,7 @@ d_loop: do i_d = 1,n_d
           call DP_TRAJECTORY(R_i,V_i,state_cp(2,1)/secsPerDay,JD_stop,eqs,&
           &integ,tol,dp_CE,idiag,rdiag)
           if (EXCEPTION_CHECK(idiag(2),phase=2)) cycle RSw_loop
-          
+
           ! Save diagnostics
           calls_end = calls_end + idiag(1);   callsArr(2) = idiag(1)
           isteps_end = isteps_end + idiag(3); istepsArr(2) = idiag(3)
@@ -355,7 +355,7 @@ d_loop: do i_d = 1,n_d
           call DP_TRAJECTORY(R_i,V_i,state_cp(3,1)/secsPerDay,JD_stop,eqs,&
           &integ,tol,dp_H2,idiag,rdiag)
           if (EXCEPTION_CHECK(idiag(2),phase=3)) cycle RSw_loop
-          
+
           ! Save diagnostics
           calls_end = calls_end + idiag(1)
           isteps_end = isteps_end + idiag(3)
@@ -380,17 +380,18 @@ d_loop: do i_d = 1,n_d
         ! Temporary fix: only if integ == 1
         if (allocated(dp_full)) deallocate(dp_full)
         allocate(dp_full(1:lenref,1:7))
-        ! Sanity check on the length of the trajectories
-        if ( (len_H1 + len_CE + len_H2 - 2 /= lenref) .and. n_rs /= 0) then
-          sanity = EXCEPTION_CHECK(-13,3)
-          cycle RSw_loop
-        end if
+        ! Sanity check on the length of the trajectories for LSODAR
         if (integ == 1) then
+          if ( (len_H1 + len_CE + len_H2 - 2 /= lenref) .and. n_rs /= 0) then
+            sanity = EXCEPTION_CHECK(-13,3)
+            cycle RSw_loop
+          end if
           dp_full(1:ind_in,:) = dp_H1(1:len_H1,:)
           if (n_rs /= 0) then
             dp_full(ind_in+1:ind_out,:) = dp_CE(2:len_CE,:)
             dp_full(ind_out+1:lenref,:) = dp_H2(2:len_H2,:)
           end if
+          
         end if
         
         ! Save checkpoint values of the reference trajectories
@@ -572,3 +573,7 @@ end program NAPLES
 !        write(*,*) e_arr(j_e)
 !        write(*,*) th_arr(k_t)
 !        write(*,*) RSw_arr(l_r)
+!        do ii=1,lenref
+!          write(20,'(7(es22.15,'',''))') ref_traj(ii,:)
+!        end do
+!        write(30,'(7(es22.15,1x))') (state_cp(ii,:), ii=1,4)
