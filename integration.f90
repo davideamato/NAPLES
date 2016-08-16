@@ -4,6 +4,7 @@ use KINDS, only: ik,qk,dk
 implicit none
 
 real(dk)  ::  eval_ratio,er_avg
+integer   ::  called = 0
 
 contains
 
@@ -86,7 +87,6 @@ integer            ::  steps
 integer  ::  istate,intstep
 real(dk) ::  sum_ord
 logical  ::  xflag
-integer,save  ::  called = 0
 
 ! RA15 variables
 real(dk)  :: s_end,h0,tstar
@@ -312,7 +312,7 @@ case (2)
   called = called + 1
   eval_ratio = real(idiagr(3),dk)/real(idiagr(1),dk)
   er_avg = er_avg + eval_ratio
-  er_avg = er_avg/called
+!  er_avg = er_avg/called
   
 end select
 

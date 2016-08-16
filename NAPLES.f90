@@ -17,7 +17,7 @@ use CONSTANTS,   only: REarth,wEarth,muEarth,muSun,R_SoI,smaEarth,d2r,pi,&
 &secsPerDay,twopi
 use AUXILIARIES, only: JD_i,JD_stop,JD_CA,time_steps,meth_switch,RSwitch,&
 &ind_time,inSoI
-use INTEGRATION, only: er_avg,eval_ratio
+use INTEGRATION, only: er_avg,eval_ratio,called
 use IO,          only: id_set,id_ares,id_rres,id_enres,id_stats
 use IO,          only: READ_SETTINGS,WRITE_SETTINGS,CREATE_ENRES,CREATE_ABSRES,&
 &CREATE_RELRES,CREATE_SMARES,CREATE_STATS,WRITE_RESULTS,WRITE_EXCEPTION
@@ -440,6 +440,8 @@ write(*,'(/,a)') 'Simulation '//runID//&
 &' at '//time_end(1:2)//':'//time_end(3:4)//':'//time_end(5:6)//'.'
 
 if (integ == 2) then
+  ! Display the average ratio of function evaluations
+  er_avg = er_avg/called
   write(*,'(a,f7.1,a)') 'Root-finding evaluations / stepping evaluations = ',&
   &er_avg*100._dk,'% (avg.)'
 

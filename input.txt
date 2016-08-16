@@ -34,7 +34,7 @@ espacing:    1
 # mxsteps:   Maximum number of steps taken in the propagations (> 1k recommended)
 integ:       2
 tolref:      1.E-23                
-tol:         1.E-5
+tol:         1.E-3
 dt_H:        10.E0
 dt_CE:       0.5E0
 mxsteps:     100000
@@ -55,4 +55,4 @@ ftime_EDr:   1
 ftime_GDr:   1
 
 # OUTPUT PATH (must be an existing directory)
-path:        /home/davide/raw/NAPLES_validation/
+path:        /home/davide/raw/NAPLES/
