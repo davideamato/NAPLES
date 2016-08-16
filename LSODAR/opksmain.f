@@ -6866,7 +6866,11 @@ C-----------------------------------------------------------------------
         IF (RWORK(I+LEWT-1) .LE. 0.0E0) GO TO 510
  260    RWORK(I+LEWT-1) = 1.0E0/RWORK(I+LEWT-1)
  270  TOLSF = UROUND*SMNORM (N, RWORK(LYH), RWORK(LEWT))
-      IF (TOLSF .LE. 1.0E0) GO TO 280
+C MODIFICATION:
+C Eliminate the check for the request of too much accuracy.
+C      IF (TOLSF .LE. 1.0E0) GO TO 280
+      GO TO 280
+C END OF MODIFICATION
       TOLSF = TOLSF*2.0E0
       IF (NST .EQ. 0) GO TO 626
       GO TO 520

@@ -219,7 +219,7 @@ write(id_set,'(a16,g14.7,a)') 'dt_H: ', dt_H,' days'
 write(id_set,'(a16,g14.7,a)') 'dt_CE: ', dt_CE,' days'
 write(id_set,'(a16,i9)')    'Max steps: ',mxsteps
 select case(eqs_H)
-case(1)
+case(1,-1)
    write(id_set,'(a16,a)') 'Equations (H): ', '  Cowell'
 case(2)
    write(id_set,'(a16,a)') 'Equations (H): ', '  K-S'
@@ -227,7 +227,7 @@ case(3)
    write(id_set,'(a16,a)') 'Equations (H): ', '  EDromo'
 end select
 select case(eqs_CE)
-case(1)
+case(1,-1)
    write(id_set,'(a16,a)') 'Equations (CE): ', '  Cowell'
 case(2)
    write(id_set,'(a16,a)') 'Equations (CE): ', '  K-S'

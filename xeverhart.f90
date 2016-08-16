@@ -1223,7 +1223,7 @@ else if (gmid < -eps_root) then
   ! Case t* > tF (Ref. [3])
   if (dg2cur <= -eps_root) then
     s0_guess = smid; g0_guess = gmid; x0_guess = xmid; v0_guess = vmid
-  else if (dg2prev > eps_root) then
+  else if (dg2cur > eps_root) then
     s0_guess = scur; g0_guess = gcur; x0_guess = xcur; v0_guess = vcur
   end if
   

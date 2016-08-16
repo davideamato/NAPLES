@@ -17,6 +17,7 @@ use CONSTANTS,   only: REarth,wEarth,muEarth,muSun,R_SoI,smaEarth,d2r,pi,&
 &secsPerDay,twopi
 use AUXILIARIES, only: JD_i,JD_stop,JD_CA,time_steps,meth_switch,RSwitch,&
 &ind_time,inSoI
+use INTEGRATION, only: er_avg,eval_ratio
 use IO,          only: id_set,id_ares,id_rres,id_enres,id_stats
 use IO,          only: READ_SETTINGS,WRITE_SETTINGS,CREATE_ENRES,CREATE_ABSRES,&
 &CREATE_RELRES,CREATE_SMARES,CREATE_STATS,WRITE_RESULTS,WRITE_EXCEPTION
@@ -169,6 +170,7 @@ R_SoI  = (muEarth/muSun)**(2._qk/5._qk)*smaEarth
 d2r = pi/180._qk
 i_sim = 0; i_fail = 0
 totsim = n_d*n_e*n_th*maxval([n_rs,1])
+er_avg = 0; eval_ratio = 0
 if (totsim <= 10000) then
   step_mess = 10
 else if (totsim > 10000 .and. totsim < 1000000) then
@@ -437,6 +439,11 @@ write(*,'(/,a)') 'Simulation '//runID//&
 &' completed on '//date_end(1:4)//'/'//date_end(5:6)//'/'//date_end(7:8)//&
 &' at '//time_end(1:2)//':'//time_end(3:4)//':'//time_end(5:6)//'.'
 
+if (integ == 2) then
+  write(*,'(a,f7.1,a)') 'Root-finding evaluations / stepping evaluations = ',&
+  &er_avg*100._dk,'% (avg.)'
+
+end if
 
 contains
 

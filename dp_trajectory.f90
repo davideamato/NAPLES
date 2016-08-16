@@ -153,9 +153,11 @@ case (2)
   s_i = DFTIME_2D(R_i,V_i,mu)
   
   ! (B)
+  !!! CHECK THIS
   call DINTEGRATE(DKS_RHS,FAKE_RHS_T2,DKS_EVT,X_i,Xdot_i,s_i,ds_i,neq,&
       &real(JD_f,dk),eqs,integ,tol,Yt,idiag,rdiag)
-
+  !!! CHECK THIS
+  
 case (3)
   ! (A)
   neq = 8

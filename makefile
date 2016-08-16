@@ -96,7 +96,7 @@ io.o: io.f90 kinds.o settings.o
 	gfortran -c io.f90 -g -fcheck=bounds 
 
 NAPLES.o: NAPLES.f90 kinds.o constants.o io.o settings.o auxiliaries.o io.o \
-reference_trajectory.o dp_trajectory.o processing.o third_bodies.o
+reference_trajectory.o dp_trajectory.o processing.o third_bodies.o integration.o
 	gfortran -c NAPLES.f90 -g -fcheck=bounds 
 
 

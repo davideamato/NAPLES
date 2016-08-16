@@ -160,7 +160,7 @@ case (1)
   
   ! Set maximum number of integration steps per output step and initial
   ! step size
-  iwork(6) = 2000
+  iwork(6) = 10000
   rwork(5) = ds_i
   
   ! Set counter and method switch flag
@@ -303,6 +303,10 @@ case (2)
   ! to avoid confusion with LSODAR.
   idiag(1) = idiagr(1); idiag(2) = istate; idiag(3) = idiagr(4)
   rdiag(1) = 0._dk; rdiag(2) = 15._dk
+  
+  ! Compute the maximum ratio between function evaluations due to root-finding
+  ! and to stepping.
+  eval_ratio = real(idiagr(3),dk)/real(idiagr(1),dk)
 
 end select
 
