@@ -10,7 +10,7 @@
 # Rsw_int    Interval of switch radii               [AU]
 d_int:       1.E0                  ,20.E0                 
 e_int:       1.01E0                ,15.E0                 
-th0_int:     178.181818181818181818,360.E0     
+th0_int:     180.E0                ,270.E0     
 Rsw_int:     0.1236177E-02         ,0.4944709E-01
 
 # MESH SETTINGS
@@ -21,7 +21,7 @@ Rsw_int:     0.1236177E-02         ,0.4944709E-01
 # espacing   Spacing in e. 1 = linear, 2 = log     
 n_d:         100
 n_e:         100
-n_th:        1
+n_th:        2
 n_rs:        0
 espacing:    1
 

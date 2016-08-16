@@ -3,6 +3,8 @@ module INTEGRATION
 use KINDS, only: ik,qk,dk
 implicit none
 
+real(dk)  ::  eval_ratio,er_avg
+
 contains
 
 subroutine DINTEGRATE(DRHS_T1,DRHS_T2,DEVT,X_i,Xdot_i,s_i,ds_i,neq,JD_f,eqs,&
@@ -84,6 +86,7 @@ integer            ::  steps
 integer  ::  istate,intstep
 real(dk) ::  sum_ord
 logical  ::  xflag
+integer,save  ::  called = 0
 
 ! RA15 variables
 real(dk)  :: s_end,h0,tstar
@@ -306,8 +309,11 @@ case (2)
   
   ! Compute the maximum ratio between function evaluations due to root-finding
   ! and to stepping.
+  called = called + 1
   eval_ratio = real(idiagr(3),dk)/real(idiagr(1),dk)
-
+  er_avg = er_avg + eval_ratio
+  er_avg = er_avg/called
+  
 end select
 
 

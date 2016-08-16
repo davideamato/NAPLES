@@ -1050,7 +1050,7 @@ integer,intent(out)  :: niter,neval,ni,warn
 integer :: nf
 real(dp)  ::  b(1:nsteps,1:neq),e(1:nsteps,1:neq)
 real(dp)  ::  s
-real(qp)  ::  qsroot,qgroot,qdgroot
+real(qp)  ::  qsroot,qgroot,qdgroot,grootprev
 
 ! ==============================================================================
 
@@ -1087,11 +1087,13 @@ do
   &,f0,nf,ni,b,d,wc,wc0,uc,r,c,warn)
   neval = neval + nf
   
+  grootprev = groot
   groot  = TIMETOUT(eqs,neq,tstar,sroot,xroot)
   dgroot = DSUND(eqs,neq,sroot,xroot,vroot)
   
-  ! Nominal exit condition
-  if (abs(groot) <= eps_root) then
+  ! Nominal exit condition: exit if groot underflows or if it doesn't change
+  ! due to roundoff.
+  if (abs(groot) <= eps_root .or. (abs(groot - grootprev) <= eps_root)) then
     conv = .true.
     exit
   end if
