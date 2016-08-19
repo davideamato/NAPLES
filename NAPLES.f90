@@ -182,14 +182,17 @@ lenref = 0;
 len_H1 = 0; len_CE = 0; len_H2 = 0 
 
 d_loop: do i_d = 1,n_d
+!d_loop: do i_d = 54,54
   
   dmin = d_arr(i_d)*REarth
   
   e_loop: do j_e = 1,n_e
+!  e_loop: do j_e = 46,46
     
     ecc = e_arr(j_e)
     
     th_loop: do k_t = 1,n_th
+!    th_loop: do k_t = 1,1
       
       theta = th_arr(k_t)*d2r
       

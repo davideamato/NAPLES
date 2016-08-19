@@ -1093,7 +1093,8 @@ do
   
   ! Nominal exit condition: exit if groot underflows or if it doesn't change
   ! due to roundoff.
-  if (abs(groot) <= eps_root .or. (abs(groot - grootprev) <= eps_root)) then
+!  if (abs(groot) <= eps_root .or. (abs(groot - grootprev) <= eps_root)) then
+  if (abs(groot) <= eps_root .or. (abs(groot) >= grootprev)) then
     conv = .true.
     exit
   end if

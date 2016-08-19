@@ -163,7 +163,7 @@ case (1)
   
   ! Set maximum number of integration steps per output step and initial
   ! step size
-  iwork(6) = 10000
+  iwork(6) = 20000
   rwork(5) = ds_i
   
   ! Set counter and method switch flag
