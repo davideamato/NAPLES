@@ -1,7 +1,11 @@
 module STATE_INIT
 
-use KINDS, only: ik,dk,qk
 implicit none
+! The initializations are always carried out in QUAD as to prevent rare problems
+! which could arise due to catastrophic cancellation.
+integer,parameter  ::  ik = selected_int_kind(9)
+integer,parameter  ::  dk = selected_real_kind(33)
+integer,parameter  ::  qk = selected_real_kind(33)
 
 contains
 

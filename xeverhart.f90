@@ -1091,10 +1091,9 @@ do
   groot  = TIMETOUT(eqs,neq,tstar,sroot,xroot)
   dgroot = DSUND(eqs,neq,sroot,xroot,vroot)
   
-  ! Nominal exit condition: exit if groot underflows or if it doesn't change
+  ! Nominal exit condition: exit if groot underflows or if it oscillates
   ! due to roundoff.
-!  if (abs(groot) <= eps_root .or. (abs(groot - grootprev) <= eps_root)) then
-  if (abs(groot) <= eps_root .or. (abs(groot) >= grootprev)) then
+  if (abs(groot) <= eps_root .or. (abs(groot) >= abs(grootprev))) then
     conv = .true.
     exit
   end if

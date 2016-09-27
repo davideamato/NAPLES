@@ -39,6 +39,7 @@ integer,intent(out)  ::  idiag(:)
 real(dk),intent(out) ::  rdiag(:)
 ! States and trajectories
 real(dk),allocatable ::  X_i(:),Xdot_i(:)
+real(qk),allocatable ::  X_i_q(:),Xdot_i_q(:)
 real(dk)             ::  s_i,ds_i
 real(dk)             ::  t_D,r_helio(1:3),v_helio(1:3)
 ! Integrator settings - LSODAR
@@ -100,9 +101,8 @@ call SET_UNITS(R_i,mu)
 
 ! Initialize diagnostics and deallocate stuff
 idiag = 0; rdiag = 0._dk
-if (allocated(X_i)) deallocate(X_i)
-if (allocated(Xdot_i)) deallocate(Xdot_i)
-
+if (allocated(X_i)) deallocate(X_i); if (allocated(X_i_q)) deallocate(X_i_q)
+if (allocated(Xdot_i)) deallocate(Xdot_i); if (allocated(Xdot_i_q)) deallocate(Xdot_i_q)
 
 ! Select the initialization routine according to the type of variables
 ! 1: Cowell (n.d. Cartesian coordinates)
@@ -145,11 +145,13 @@ case (2)
   ! K-S is always initialized as a set of 1st-order equations since it is
   ! necessary to integrate the equations for time and ang. momentum, which are
   ! first order.
+  ! Initialization is performed in QUAD as to prevent rare round-off problems,
+  ! same for EDromo.
   ! (A)
   neq = 10
-  allocate(X_i(1:neq)); allocate(Xdot_i(1:neq))
-  call DINIT_KS(real(R_i,dk),real(V_i,dk),real(JD_i*secsPerDay,dk),&
-  &mu,DU,TU,X_i,0._dk)
+  allocate(X_i(1:neq)); allocate(Xdot_i(1:neq)); allocate(X_i_q(1:neq))
+  call DINIT_KS(R_i,V_i,JD_i*secsPerDay,mu,DU,TU,X_i_q,0._qk)
+  X_i = X_i_q
   s_i = DFTIME_2D(R_i,V_i,mu)
   
   ! (B)
@@ -161,10 +163,10 @@ case (2)
 case (3)
   ! (A)
   neq = 8
-  allocate(X_i(1:neq)); allocate(Xdot_i(1:neq))
+  allocate(X_i(1:neq)); allocate(Xdot_i(1:neq)); allocate(X_i_q(1:neq))
   s_i = DFTIME_2D(R_i,V_i,mu)
-  call DINIT_EDROMO(real(R_i,dk),real(V_i,dk),real(JD_i*secsPerDay,dk),&
-  &DU,TU,X_i,s_i,0._dk,flag_time_EDr)
+  call DINIT_EDROMO(R_i,V_i,JD_i*secsPerDay,DU,TU,X_i_q,real(s_i,qk),0._qk,flag_time_EDr)
+  X_i = X_i_q
   ! SANITY CHECK FOR NaNs
   if (any(X_i /= X_i)) then
     idiag(2) = -12
@@ -179,10 +181,10 @@ case (3)
 case (4)
   ! (A)
   neq = 8
-  allocate(X_i(1:neq)); allocate(Xdot_i(1:neq))
+  allocate(X_i(1:neq)); allocate(Xdot_i(1:neq)); allocate(X_i_q(1:neq))
   s_i = DHYPAN((R_i/DU),(V_i/(DU*TU)))
-  call DINIT_GDROMO(real(R_i,dk),real(V_i,dk),real(JD_i*secsPerDay,dk),&
-  &DU,TU,X_i,s_i,0._dk,flag_time_GDr)
+  call DINIT_GDROMO(R_i,V_i,JD_i*secsPerDay,DU,TU,X_i_q,real(s_i,qk),0._qk,flag_time_GDr)
+  X_i = X_i_q
   ! SANITY CHECK FOR NaNs
   if (any(X_i /= X_i)) then
     idiag(2) = -12

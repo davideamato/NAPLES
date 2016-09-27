@@ -8,9 +8,9 @@
 # e_int      Interval of hyperbolic eccentricities  [-]
 # th0_int    Interval of initial longitudes         [deg]
 # Rsw_int    Interval of switch radii               [AU]
-d_int:       1.E0                  ,20.E0                 
-e_int:       1.01E0                ,15.E0                 
-th0_int:     180.E0                ,270.E0     
+d_int:       15.3939393939394E0    ,20.E0
+e_int:       1.01E0                ,15.E0
+th0_int:     0.0E0                 ,3.15E2
 Rsw_int:     0.1236177E-02         ,0.4944709E-01
 
 # MESH SETTINGS
@@ -19,10 +19,10 @@ Rsw_int:     0.1236177E-02         ,0.4944709E-01
 # n_th       Number of simulations in theta0
 # n_rs       Number of simulations in R_Sw
 # espacing   Spacing in e. 1 = linear, 2 = log     
-n_d:         100
+n_d:         25
 n_e:         100
-n_th:        2
-n_rs:        0
+n_th:        8
+n_rs:        50
 espacing:    1
 
 # INTEGRATOR SETTINGS
@@ -33,7 +33,7 @@ espacing:    1
 # dt_CE:     Physical time step size for phase CE (days) 
 # mxsteps:   Maximum number of steps taken in the propagations (> 1k recommended)
 integ:       2
-tolref:      1.E-23                
+tolref:      1.E-23
 tol:         1.E-3
 dt_H:        10.E0
 dt_CE:       0.5E0
@@ -43,8 +43,8 @@ mxsteps:     100000
 # eqs:       -1 = Cowell (II), 1 = Cowell (I), 2 = K-S, 3 = EDromo, 4 = GDromo.
 # The choices 3 (EDromo) and 4 (GDromo) are valid only in the heliocentric and
 # close encounter phases respectively. The choice -1 is only valid for integ = 2.
-eqs_H:       2
-eqs_CE:      2
+eqs_H:       3
+eqs_CE:      -1
 
 # REGULARIZED FORMULATION SETTINGS
 # ftime_EDr: Type of EDromo time element. 0 = physical time, 1 = Constant Time Element,
@@ -55,4 +55,4 @@ ftime_EDr:   1
 ftime_GDr:   1
 
 # OUTPUT PATH (must be an existing directory)
-path:        /home/davide/raw/NAPLES/
+path:        /home/davide/raw/NAPLES/20160921c/

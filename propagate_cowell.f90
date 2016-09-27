@@ -83,7 +83,7 @@ y(4:6) = V_i/(DU*TU)
 istate = 1_ik
 iwork = 0_ik
 rwork = 0._qk
-iwork(6) = 10000_ik
+iwork(6) = 20000_ik
 if (inSoI) then  ! Event detection is necessary only in phase CE
   nevts = 1
 else
