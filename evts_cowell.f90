@@ -1,4 +1,14 @@
 module EVTS_COWELL
+! Description:
+!    Contains event functions for the Cowell formulation in double- and
+!    quad-precision.
+!
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 implicit none
@@ -8,6 +18,7 @@ contains
 subroutine QCOWELL_EVT(neq,t,y,ng,roots)
 ! Description:
 !    Finds roots to stop the integration for the Cowell formulation.
+!    Quad precision.
 ! 
 ! ==============================================================================
 
@@ -51,8 +62,9 @@ end subroutine QCOWELL_EVT
 
 
 subroutine DCOWELL_EVT(neq,t,y,ng,roots)
-! Find roots to stop the integration at output points and at switch time for
-! the Cowell formulation.
+! Description:
+!    Finds roots to stop the integration for the Cowell formulation.
+!    Quad precision.
 ! 
 ! ==============================================================================
 

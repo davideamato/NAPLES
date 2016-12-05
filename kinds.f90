@@ -1,4 +1,15 @@
 module KINDS
+! Description:
+!    Contains values for the kind parameters used in the program. To work in
+!    quadruple precision, set dk = qk = 33. Remember that in this case only the
+!    DLSODAR subroutines can be used.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 implicit none
 

@@ -1,4 +1,13 @@
 module EVTS_GDROMO
+! Description:
+!    Contains event functions for the GDromo formulation in double precision.
+!
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 
@@ -6,7 +15,7 @@ contains
 
 subroutine DGDROMO_EVT(neq,phi,z,ng,roots)
 ! Description:
-!    Finds roots to stop the integration for the Dromo formulation.
+!    Finds roots to stop the integration for the GDromo formulation.
 ! 
 ! ==============================================================================
 

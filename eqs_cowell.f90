@@ -1,4 +1,14 @@
 module EQS_COWELL
+! Description:
+!    Contains the subroutines for computing the RHS of the Cowell equations in
+!    double- and quadruple-precision.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: dk,qk
 
@@ -8,14 +18,8 @@ contains
 
 subroutine QCOWELL_RHS(neq,t,y,ydot)
 ! Description:
-!    Computes the value of the right-hand side of the equations of motion of the Cowell
-!    formulation.
-! 
-! Author:
-!    Davide Amato
-!    Space Dynamics Group
-!    Technical University of Madrid
-!    d.amato@upm.es
+!    Computes the value of the right-hand side of the equations of motion of the 
+!    Cowell formulation (quad precision).
 !
 ! ==============================================================================
 !                                  VARIABLES AND DECLARATIONS
@@ -75,19 +79,11 @@ end subroutine QCOWELL_RHS
 
 subroutine DCOWELL_RHS(neq,t,y,ydot)
 ! Description:
-!    Computes the value of the right-hand side of the equations of motion of the Cowell
-!    formulation.
-! 
-! Author:
-!    Davide Amato
-!    Space Dynamics Group
-!    Technical University of Madrid
-!    d.amato@upm.es
+!    Computes the value of the right-hand side of the equations of motion of
+!    the Cowell formulation (double precision).
 !
 ! ==============================================================================
-!                                  VARIABLES AND DECLARATIONS
-! ==============================================================================
-!
+
 ! MODULES
 use AUXILIARIES, only: inSoI
 use CONSTANTS,   only: smaEarth,wEarth,muEarth,muSun,DU,TU
@@ -97,19 +93,17 @@ use THIRDBODIES, only: DACC3B_ND
 implicit none
 
 ! Arguments
-integer,intent(in)     ::  neq             ! Number of equations.
+integer,intent(in)     ::  neq                 ! Number of equations.
 real(dk),intent(in)        ::  t               ! Time, ND.
 real(dk),intent(in)        ::  y(1:neq)        ! Cartesian state vector, ND.
 real(dk),intent(out)       ::  ydot(1:neq)     ! RHS of EoM's, ND.
 
 ! Local variables
-real(dk)          ::  rMag                      ! Magnitude of position vector. [-]
-real(dk)          ::  ap(1:3)                   ! Perturbation acceleration. [-]
-real(dk)          ::  r2(1:3)                   ! Position vector of the third body [-]
-real(dk)          ::  lon_Earth                 ! Current Earth longitude [rad]
+real(dk)          ::  rMag                     ! Magnitude of position vector. [-]
+real(dk)          ::  ap(1:3)                  ! Perturbation acceleration. [-]
+real(dk)          ::  r2(1:3)                  ! Position vector of the third body [-]
+real(dk)          ::  lon_Earth                ! Current Earth longitude [rad]
 
-! ==============================================================================
-!                                            EXECUTION
 ! ==============================================================================
 
 rMag = sqrt(dot_product(y(1:3),y(1:3)))
@@ -145,14 +139,8 @@ subroutine DCOWELL_RHS_T2(neq,t,y,ydot,yddot)
 ! Description:
 !    Computes the value of the right-hand side of the equations of motion of the 
 !    Cowell formulation. This version provides the right-hand-side of the
-!    2nd-order equations of motion.
+!    2nd-order equations of motion. Double precision.
 ! 
-! Author:
-!    Davide Amato
-!    Space Dynamics Group
-!    Technical University of Madrid
-!    d.amato@upm.es
-!
 ! ==============================================================================
 !                                  VARIABLES AND DECLARATIONS
 ! ==============================================================================

@@ -1,4 +1,14 @@
 module THIRDBODIES
+! Description:
+!    Contains subroutines for computing the perturbing accelerations due to
+!    a third body in the CR3BP, and its Cartesian state.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 implicit none
@@ -7,12 +17,10 @@ contains
 
 function QACC3B_ND(r3,r2,mu1,mu2)
 ! Description:
-!    Computes non-dimensional perturbation acceleration due to a third body 'mu2' when the main
-!    body is 'mu1'.
+!    Computes non-dimensional perturbation acceleration due to a third body
+!    'mu2' when the main body is 'mu1'. Quadruple precision.
 ! 
-! ==============================================================================================
-!                                  VARIABLES AND DECLARATIONS
-! ==============================================================================================
+! ==============================================================================
 
 ! VARIABLES
 implicit none
@@ -26,9 +34,7 @@ real(qk)  ::  QACC3B_ND(1:3)
 real(qk)  ::  r23(1:3)              ! 3body->particle position vector, ND.
 real(qk)  ::  r2N,r23N
 
-! ==============================================================================================
-!                                            EXECUTION
-! ==============================================================================================
+! ==============================================================================
 
 ! Compute position wrt third body
 r23(:) = r3(:) - r2(:)
@@ -41,12 +47,10 @@ end function QACC3B_ND
 
 function DACC3B_ND(r3,r2,mu1,mu2)
 ! Description:
-!    Computes non-dimensional perturbation acceleration due to a third body 'mu2' when the main
-!    body is 'mu1'.
+!    Computes non-dimensional perturbation acceleration due to a third body
+!    'mu2' when the main body is 'mu1'.
 ! 
-! ==============================================================================================
-!                                  VARIABLES AND DECLARATIONS
-! ==============================================================================================
+! ==============================================================================
 
 ! VARIABLES
 implicit none
@@ -60,9 +64,7 @@ real(dk)  ::  DACC3B_ND(1:3)
 real(dk)  ::  r23(1:3)              ! 3body->particle position vector, ND.
 real(dk)  ::  r2N,r23N
 
-! ==============================================================================================
-!                                            EXECUTION
-! ==============================================================================================
+! ==============================================================================
 
 ! Compute position wrt third body
 r23(:) = r3(:) - r2(:)
@@ -74,8 +76,12 @@ DACC3B_ND = - (mu2/mu1)*(r23/r23N**3 + r2/r2N**3)
 end function DACC3B_ND
 
 function QPOS_VEL_CIRC(t,w,sma)
-! Computes the position and velocity of a planet in a circular orbit with mean
-! motion "w", semi-major axis "sma" at time "t". Quadruple precision.
+! Description:
+!    Computes the position and velocity of a planet in a circular orbit with mean
+!    motion "w", semi-major axis "sma" at time "t". Quadruple precision.
+! 
+! ==============================================================================
+
 real(qk),intent(in)  ::  t,w,sma
 real(qk)  ::  QPOS_VEL_CIRC(1:6)
 real(qk)  ::  lon
@@ -87,8 +93,11 @@ QPOS_VEL_CIRC(4:6) = sma*w*[-sin(lon),cos(lon),0._qk]
 end function QPOS_VEL_CIRC
 
 function DPOS_VEL_CIRC(t,w,sma)
-! Computes the position and velocity of a planet in a circular orbit with mean
-! motion "w", semi-major axis "sma" at time "t". Double precision.
+! Description:
+!    Computes the position and velocity of a planet in a circular orbit with mean
+!    motion "w", semi-major axis "sma" at time "t". Double precision.
+! ==============================================================================
+
 real(dk),intent(in)  ::  t,w,sma
 real(dk)  ::  DPOS_VEL_CIRC(1:6)
 real(dk)  ::  lon

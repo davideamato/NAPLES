@@ -1,13 +1,21 @@
 program NAPLES
-! Description: program NAPLES (Numerical Analysis of Planetary EncounterS).
-! Propagates orbits in the Earth-Sun circular, restricted three-body problem 
-! starting from initial conditions assigned at the minimum approach distance. 
-! The initial conditions are parametrized in (d,e,theta), and a change of 
-! primaries is performed when passing the geocentric distance RSw, according to 
-! the Online Trajectory Matching algorithm.
+! Description:
+!    Program NAPLES (Numerical Analysis of PLanetary encounterS).
+!    Propagates orbits in the Earth-Sun circular, restricted three-body problem 
+!    starting from initial conditions assigned at the minimum approach distance. 
+!    The initial conditions are parametrized in (d,e,theta), and *one* change of 
+!    primaries is performed when passing the geocentric distance RSw, according to 
+!    the Trajectory Splitting algorithm.
+!    
+!    Reference: Amato D., Baù G., and Bombardelli C., "Accurate numerical orbit
+!    propagation of planetary close encounters". Submitted to MNRAS. 2016.
+!    
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
 ! 
-! Davide Amato
-! d.amato@upm.es
+! ==============================================================================
 
 ! MODULES
 use KINDS,       only: ik,dk,qk
@@ -44,7 +52,6 @@ real(qk)  ::  TEarth
 ! Trajectory data
 real(qk),allocatable  ::  traj_bwd(:,:),traj_fwd(:,:),ref_traj(:,:)
 real(dk),allocatable  ::  dp_H1(:,:), dp_CE(:,:), dp_H2(:,:), dp_full(:,:)
-real(dk)  ::  state_end(1:7)
 real(qk)  ::  state_cp(1:4,1:7)          ! State at checkpoints (test)
 real(qk)  ::  state_cp_ref(1:4,1:7)      ! State at checkpoints (reference)
 real(qk)  ::  yD_Earth(1:6)
@@ -59,7 +66,7 @@ real(qk)  ::  JD_in,JD_out,JD_f
 real(dk)  ::  dR_abs(1:3),dR_rel(1:3),dV_abs(1:3),dV_rel(1:3)
 real(dk)  ::  dEn_rel(1:3),dSMA_abs(1:3)
 ! Sanity checks, settings and diagnostics
-integer   ::  istate_bwd,istate_fwd,istate_curr
+integer   ::  istate_bwd,istate_fwd
 integer   ::  idiag(1:10)
 real(dk)  ::  rdiag(1:3)
 integer   ::  totsim,step_mess,i_fail
@@ -70,8 +77,6 @@ integer   ::  callsArr(1:2),calls_end,istepsArr(1:2),isteps_end
 real(dk)  ::  mordArr(1:2),mord_end
 integer   ::  ncheck
 logical   ::  sanity
-! CPU time
-real(dk)  ::  cputime_start,cputime_end
 ! Auxiliary variables
 real(qk)  ::  yt_quad(1:7)
 
@@ -154,11 +159,11 @@ end do
 ppath = trim(path)//runID//'/'
 call SYSTEM('mkdir '//trim(ppath))
 call WRITE_SETTINGS(trim(ppath)//'settings_'//runID//'.txt',runID)
-call CREATE_ENRES(trim(ppath)//'enres_'//runID//'.dat',runID)
-call CREATE_ABSRES(trim(ppath)//'absres_'//runID//'.dat',runID)
-call CREATE_RELRES(trim(ppath)//'relres_'//runID//'.dat',runID)
-call CREATE_SMARES(trim(ppath)//'smares_'//runID//'.dat',runID)
-call CREATE_STATS(trim(ppath)//'stats_'//runID//'.dat',runID)
+call CREATE_ENRES(trim(ppath)//'enres_'//runID//'.dat')
+call CREATE_ABSRES(trim(ppath)//'absres_'//runID//'.dat')
+call CREATE_RELRES(trim(ppath)//'relres_'//runID//'.dat')
+call CREATE_SMARES(trim(ppath)//'smares_'//runID//'.dat')
+call CREATE_STATS(trim(ppath)//'stats_'//runID//'.dat')
 
 ! ==============================================================================
 ! 04. LOOP OVER THE PARAMETERS
@@ -182,17 +187,14 @@ lenref = 0;
 len_H1 = 0; len_CE = 0; len_H2 = 0 
 
 d_loop: do i_d = 1,n_d
-!d_loop: do i_d = 54,54
   
   dmin = d_arr(i_d)*REarth
   
   e_loop: do j_e = 1,n_e
-!  e_loop: do j_e = 46,46
     
     ecc = e_arr(j_e)
     
     th_loop: do k_t = 1,n_th
-!    th_loop: do k_t = 1,1
       
       theta = th_arr(k_t)*d2r
       
@@ -242,8 +244,6 @@ d_loop: do i_d = 1,n_d
         ! 05a. REFERENCE TRAJECTORY - BWD
         ! ======================================================================
         
-        call CPU_TIME(cputime_start)
-        
         call REFERENCE_TRAJECTORY_COWELL(R_CA_pl,V_CA_pl,JD_CA,JD_i,tolref,traj_bwd,&
         &JD_in,ind_in_bwd,istate_bwd)
         if (EXCEPTION_CHECK(istate_bwd,phase=0)) cycle RSw_loop
@@ -255,8 +255,6 @@ d_loop: do i_d = 1,n_d
         call REFERENCE_TRAJECTORY_COWELL(R_CA_pl,V_CA_pl,JD_CA,JD_f,tolref,&
         &traj_fwd,JD_out,ind_out_fwd,istate_fwd)
         if (EXCEPTION_CHECK(istate_fwd,phase=0)) cycle RSw_loop
-        
-        call CPU_TIME(cputime_end)
         
         ! Save reference trajectory
         lenref = size(traj_bwd,1) - 1_ik + size(traj_fwd,1)
@@ -336,14 +334,15 @@ d_loop: do i_d = 1,n_d
           
           len_CE = size(dp_CE,1)
           ! Save effective switch radii
-          RSw_eff(1) = sqrt(dot_product(R_i,R_i))
+          RSw_eff(1) = real(sqrt(dot_product(R_i,R_i)),dk)
           RSw_eff(2) = sqrt(dot_product(dp_CE(len_CE,2:4),dp_CE(len_CE,2:4)))
-          RSw_eff = RSw_eff/smaEarth
+          RSw_eff    = real(RSw_eff/smaEarth,dk)
           
           ! dp_CE is planetocentric, convert to heliocentric in quad precision.
           helio_conv: do ii = 1,len_CE
             yt_quad = dp_CE(ii,1:7)
-            dp_CE(ii,2:7) = yt_quad(2:7) + QPOS_VEL_CIRC(yt_quad(1),wEarth,smaEarth)
+            dp_CE(ii,2:7) = real(yt_quad(2:7) + &
+            &QPOS_VEL_CIRC(yt_quad(1),wEarth,smaEarth),dk)
           end do helio_conv
           
           state_cp(3,:) = dp_CE(len_CE,:)
@@ -511,81 +510,3 @@ subroutine FLUSHO()
 end subroutine FLUSHO
 
 end program NAPLES
-
-! ========================================
-! ========== DEBUGGING GARBAGE ===========
-! ========================================
-
-!do ii=1,lenref
-!  write(52,'(7(es22.15,'',''))') dp_traj(ii,1:7)
-!end do
-
-!!subroutine progress(i,nsim)
-
-!!implicit none
-!!integer,intent(in)  ::  i,nsim
-!!character(len=80)   ::  bar
-!!integer  ::  barlen
-
-!!bar = 'Progress:    % '//'[===============================================================]'
-!!if (real(i/nsim,dk) <= 1._dk) then
-!!  barlen = (i/nsim)*60
-!!else
-!!  barlen = 60
-!!end if
-
-!end subroutine progress
-!      write(*,*) 'X0 = ',ref_traj(1,1)
-!      write(*,*) 'Y0 = ',ref_traj(1,2)
-!      write(*,*) 'Z0 = ',ref_traj(1,3)
-!      write(*,*) 'Xf = ',ref_traj(lenref,1)
-!      write(*,*) 'Yf = ',ref_traj(lenref,2)
-!      write(*,*) 'Zf = ',ref_traj(lenref,3)
-!      
-!!! DEBUG
-!write(*,*) size(traj_bwd,1), size(traj_fwd,1)
-!write(*,*) lenref
-!do ii=1,size(traj_bwd,1)
-!  write(48,'(7(es22.15,'',''))') traj_bwd(ii,:)
-!end do
-!do ii=1,size(traj_fwd,1)
-!  write(49,'(7(es22.15,'',''))') traj_fwd(ii,:)
-!end do
-!do ii=1,lenref
-!  write(50,'(7(es22.15,'',''))') ref_traj(ii,:)
-!end do
-!!!! DEBUG
-! Save time step sizes used in the reference integration.
-        ! dt_H1 = t2 - t1
-        ! dt_CE = t_(CA + 1) - t_CA
-        ! dt_H2 = tf - t(f-1)
-!        dt_H1 = time_steps(2) - time_steps(1)
-!        dt_CE = time_steps(size(traj_bwd) + 1) - time_steps(size(traj_bwd))
-!        dt_H2 = time_steps(lenref) - time_steps(lenref-1)
-
-!        !! DEBUG
-!        do ii=1,lenref
-!          write(20,'(7(es22.15,'',''))') ref_traj(ii,:)
-!          write(30,'(7(es22.15,'',''))') dp_full(ii,:)
-!        end do
-!        do ii=1,len_H1
-!          write(21,'(7(es22.15,'',''))') dp_H1(ii,:)
-!        end do
-!        do ii=1,len_CE
-!          write(22,'(7(es22.15,'',''))') dp_CE(ii,:)
-!        end do
-!        do ii=1,len_H2
-!          write(23,'(7(es22.15,'',''))') dp_H2(ii,:)
-!        end do
-!        stop
-!        !! DEBUG
-!        write(*,'(7(es22.15))') ( state_cp(ii,:) , ii = 1,4 )
-!        write(*,'(7(es22.15))') ( state_cp_ref(ii,:) , ii = 1,4 )
-!        write(*,*) d_arr(i_d)
-!        write(*,*) e_arr(j_e)
-!        write(*,*) th_arr(k_t)
-!        write(*,*) RSw_arr(l_r)
-!        do ii=1,lenref
-!          write(20,'(7(es22.15,'',''))') ref_traj(ii,:)
-!        end do
-!        write(30,'(7(es22.15,1x))') (state_cp(ii,:), ii=1,4)

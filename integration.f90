@@ -1,4 +1,14 @@
 module INTEGRATION
+! Description:
+!    Contains the core integration subroutine, DINTEGRATE, for the NAPLES
+!    program.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,qk,dk
 implicit none
@@ -10,21 +20,24 @@ contains
 
 subroutine DINTEGRATE(DRHS_T1,DRHS_T2,DEVT,X_i,Xdot_i,s_i,ds_i,neq,JD_f,eqs,&
 &integ,tol,Yt,idiag,rdiag)
-! Integrates the equations of motion starting from initial values of the state
-! vector and independent variable "X_i, s_i" until time "JD_stop".
-! It chooses between LSODAR and Radau as integrators and uses any of the
-! following formulations:
-! eqs = 1: Cowell
-! eqs = 2: Kustaanheimo-Stiefel
-! eqs = 3: EDromo
-! eqs = 4: GDromo
+! Description:
+!    Integrates the equations of motion starting from initial values of the state
+!    vector and independent variable "X_i, s_i" until time "JD_stop".
+!    It chooses between LSODAR and Radau as integrators and uses any of the
+!    following formulations:
+!    eqs = 1: Cowell
+!    eqs = 2: Kustaanheimo-Stiefel
+!    eqs = 3: EDromo
+!    eqs = 4: GDromo
 ! 
 ! Double precision version.
+!
+! ==============================================================================
 
 ! MODULES
-use AUXILIARIES, only: meth_switch,time_steps,ind_time,JD_next,JD_stop,inSoI
+use AUXILIARIES, only: meth_switch,time_steps,ind_time,JD_next
 use CONSTANTS,   only: DU,TU,secsPerDay
-use SETTINGS,    only: mxsteps,dt_H,dt_CE
+use SETTINGS,    only: mxsteps
 use XEVERHART
 
 ! VARIABLES
@@ -82,26 +95,24 @@ integer,allocatable::  jroot(:)
 real(dk)           ::  rwork(1:lrw)
 integer            ::  iwork(1:liw)
 logical            ::  next_t
-integer            ::  steps
+
 ! Diagnostics
 integer  ::  istate,intstep
 real(dk) ::  sum_ord
 logical  ::  xflag
 
 ! RA15 variables
-real(dk)  :: s_end,h0,tstar
+real(dk)  :: s_end,tstar
 real(dk),allocatable  ::  tip(:),Xt(:,:)
-integer   :: nclass,mip,temp,itaskr,idiagr(1:10)
+integer   :: nclass,mip,itaskr,idiagr(1:10)
 integer   :: ii
 
 ! States and trajectories
 real(dk) ::  X(1:neq),Xdot(1:neq),s,ds
-real(dk) ::  Y(1:7)
 real(dk),allocatable  ::  auxY(:,:)
 
 ! Debug
-integer  ::  debug_int,it
-integer,save :: jj = 1
+integer  ::  debug_int
 
 ! ==============================================================================
 
@@ -336,7 +347,11 @@ end subroutine DINTEGRATE
 ! ==============================================================================
 
 function DSTATE_AND_TIME(neq,eqs,X,Xdot,s,DU,TU,pot)
-! Convert (X,s) to (R,V,t) for any formulation.
+! Description:
+!    Convert (X,s) to (R,V,t) for any formulation, in the reference system
+!    considered.
+! 
+! ==============================================================================
 
 use SETTINGS,  only: flag_time_EDr,flag_time_GDr
 use TRANSFORM, only: DKS2CART,DEDROMO2CART,DEDROMO_TE2TIME,DGDROMO2CART,&
@@ -351,7 +366,6 @@ real(dk)  ::  DSTATE_AND_TIME(1:7)
 
 ! Locals
 real(dk)  ::  r(1:3),v(1:3),t
-
 
 ! ==============================================================================
 
@@ -382,6 +396,11 @@ end function DSTATE_AND_TIME
 
 
 subroutine SANITY_CHECKS(neq,X,i_int,mxsteps,istate,idiag,xflag)
+! Description:
+!    Performs sanity checks on the state vector and on the value of istate. If
+!    any of the sanity check is positive, xflag = .true. and the integration
+!    is quitted in the main loop.
+! ==============================================================================
 
 implicit none
 ! Inputs
@@ -403,93 +422,4 @@ else if (i_int == mxsteps) then
 end if
 end subroutine SANITY_CHECKS
 
-
-
-!function EXIT_COND(eqs,integ,intstep,steps,jroot,nevts)
-
-!implicit none
-!! Inputs
-!integer,intent(in)  ::  eqs,integ,intstep,steps,nevts
-!integer,intent(in)  ::  jroot(1:nevts)
-!! Function definition
-!logical  ::  EXIT_COND
-
-!! ==============================================================================
-
-!select case (eqs)
-!case (1)
-!  EXIT_COND = (intstep == steps)
-
-!case (2)
-!  EXIT_COND = (jroot(2) == 1 )  ! TO DO: or jroot(3) == 1 (NOPE)
-!  
-!case (3)
-!  EXIT_COND = (jroot(2) == 1)   ! TO DO: or jroot(3) == 1 (NOPE)
-
-!end select
-
-!end function EXIT_COND
-!select case (eqs)
-!case(1)
-!!  ds = ((JD_f*secsPerDay*TU - s_i)/steps)
-!  if (inSoI) then
-!    ds = dt_CE*secsPerDay*TU
-!  else
-!    ds = dt_H*secsPerDay*TU
-!  end if
-!  steps = (JD_f*secsPerDay*TU - s_i)/ds
-
-!case(2,3,4)
-!end select
-!  select case (eqs)
-!  case(1)
-!    nevts = 0
-!  case(2,3,4)
-!  end select
-!    if (eqs /= 1) then
-
-!    else
-!      ! Adjust size of last time step for Cowell
-!      if (intstep == steps - 1) ds = JD_f*secsPerDay*TU - s
-!    end if
-!    if (EXIT_COND(eqs,integ,intstep,steps,jroot,nevts)) exit
-!write(*,*) 'DINTEGRATE: X_i = ',X_i
-!write(*,*) 'DINTEGRATE: s_i = ',s_i
-!  write(*,*) 'DINTEGRATE: jroot = ',jroot
-!  write(*,*) 'DINTEGRATE: X = ',X
-!  write(*,*) 'DINTEGRATE: s = ',s
-!  write(*,*) 'DINTEGRATE: auxY = '
-!  write(*,'(7(es22.15,1x))') ( auxY(ii,1:7), ii =1,intstep+1 )
-!write(*,*) 'DINTEGRATE: JD_i = ',auxY(1,1)/86400._qk
-!write(*,*) 'DINTEGRATE: JD_next = ',JD_next
-!    write(*,*) 'istate = ',istate
-!    if (istate > 0) then
-!      select case (eqs)
-!        case(-1)
-!    write(*,*) 'istate = ',istate
-!    write(*,*) size(xt,2)
-!    write(30,'(9(es22.15,1x))') (xt(ii,:), ii=1,size(xt,1))
-!    if (istate > 0) then
-!      select case (eqs)
-!        case(-1)
-!          it = 1
-!        case(2)
-!          it = 11
-!        case(3,4)
-!          it = 9
-!      end select
-!      write(*,*) 'Initial JD = ',Xt(1,it)/TU/secsPerDay
-!      write(*,*) 'Final JD = ',Xt(size(xt,1),it)/TU/secsPerDay
-!      write(*,*) 'tstar (JD) = ',tstar/TU/secsPerDay
-!    end if
-!          it = 1
-!        case(2)
-!          it = 11
-!        case(3,4)
-!          it = 9
-!      end select
-!      write(*,*) 'Initial JD = ',Xt(1,it)/TU/secsPerDay
-!      write(*,*) 'Final JD = ',Xt(size(xt,1),it)/TU/secsPerDay
-!      write(*,*) 'tstar (JD) = ',tstar/TU/secsPerDay
-!    end if
 end module INTEGRATION

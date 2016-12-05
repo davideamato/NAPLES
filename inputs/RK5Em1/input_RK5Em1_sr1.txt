@@ -1,0 +1,58 @@
+# Input file for the program NAPLES.
+#
+# Davide Amato
+# d.amato@upm.es
+
+# PARAMETER SPACE INTERVALS
+# d_int      Interval of minimum approach distances [R_E]
+# e_int      Interval of hyperbolic eccentricities  [-]
+# th0_int    Interval of initial longitudes         [deg]
+# Rsw_int    Interval of switch radii               [AU]
+d_int:       1.E0                  ,20.E0
+e_int:       1.01E0                ,15.E0
+th0_int:     0.0E0                 ,45.E0
+Rsw_int:     1.5000000E-02         ,0.4944709E-01
+
+# MESH SETTINGS
+# n_d        Number of simulations in d
+# n_e        Number of simulations in e
+# n_th       Number of simulations in theta0
+# n_rs       Number of simulations in R_Sw
+# espacing   Spacing in e. 1 = linear, 2 = log     
+n_d:         50
+n_e:         50
+n_th:        2
+n_rs:        0
+espacing:    1
+
+# INTEGRATOR SETTINGS
+# integ:     Integrator flag. 1 = LSODAR, 2 = Radau.
+# tolref:    Absolute = relative tolerance for the reference propagation
+# tol:       Absolute = relative tolerance for the test propagation
+# dt_H:      Physical time step size for phases H-/H+ (days)
+# dt_CE:     Physical time step size for phase CE (days) 
+# mxsteps:   Maximum number of steps taken in the propagations (> 1k recommended)
+integ:       2
+tolref:      1.E-23
+tol:         5.E-1
+dt_H:        10.E0
+dt_CE:       0.5E0
+mxsteps:     100000
+
+# CHOICE OF EQUATIONS OF MOTION
+# eqs:       -1 = Cowell (II), 1 = Cowell (I), 2 = K-S, 3 = EDromo, 4 = GDromo.
+# The choices 3 (EDromo) and 4 (GDromo) are valid only in the heliocentric and
+# close encounter phases respectively. The choice -1 is only valid for integ = 2.
+eqs_H:       2
+eqs_CE:      2
+
+# REGULARIZED FORMULATION SETTINGS
+# ftime_EDr: Type of EDromo time element. 0 = physical time, 1 = Constant Time Element,
+#            2 = Linear Time Element.
+# ftime_GDr: Type of GDromo time element. 0 = physical time, 1 = Constant Time Element,
+#            2 = Linear Time Element.
+ftime_EDr:   1
+ftime_GDr:   1
+
+# OUTPUT PATH (must be an existing directory)
+path:        /home/davide/raw/NAPLES/20160916c/

@@ -1,4 +1,14 @@
 module EQS_GDROMO
+! Description:
+!    Contains the subroutine for computing the RHS of the GDromo equations in
+!    double precision.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 implicit none
@@ -6,12 +16,11 @@ implicit none
 contains
 
 subroutine DGDROMO_RHS(neq,phi,z,zdot)
-
-! ==============================================================================================
+! Description:
+!    Computes the value of the right-hand side of the equations of motion of the
+!    GDromo formulation.
 !
-!                                  VARIABLES AND DECLARATIONS
-!
-! ==============================================================================================
+! ==============================================================================
 
 ! MODULES
 use AUXILIARIES, only: inSoI

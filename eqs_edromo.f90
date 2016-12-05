@@ -1,4 +1,14 @@
 module EQS_EDROMO
+! Description:
+!    Contains the subroutine for computing the RHS of the EDromo equations in
+!    double precision.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 implicit none
@@ -7,23 +17,10 @@ contains
 
 subroutine DEDROMO_RHS(neq,phi,z,zdot)
 ! Description:
-!    Computes the value of the right-hand side of the equations of motion of the EDromo
-!    formulation.
-! 
-! Versions:
-!   17/09/2015: v1.
+!    Computes the value of the right-hand side of the equations of motion of the
+!    EDromo formulation.
 !
-! Author:
-!    Davide Amato
-!    Space Dynamics Group
-!    Technical University of Madrid
-!    d.amato@upm.es
-!
-! ==============================================================================================
-!
-!                                  VARIABLES AND DECLARATIONS
-!
-! ==============================================================================================
+! ==============================================================================
 
 ! MODULES
 use AUXILIARIES, only: inSoI
@@ -39,7 +36,7 @@ implicit none
 integer(ik),intent(in)     ::  neq             ! Number of equations
 real(dk),intent(in)        ::  phi             ! EDromo independent variable
 real(dk),intent(in)        ::  z(1:neq)        ! EDromo state vector, ND
-real(dk),intent(out)       ::  zdot(1:neq)    	! RHS of EoM's, ND
+real(dk),intent(out)       ::  zdot(1:neq)     ! RHS of EoM's, ND
 
 ! Auxiliary quantities
 real(dk)    ::  sph,cph
@@ -53,20 +50,13 @@ real(dk)    ::  rV(1:3),t
 real(dk)    ::  x_vec(1:3),y_vec(1:3)
 
 ! Potential
-real(dk)    ::  A,Upot,dUdt,dUdr(1:3)
+real(dk)    ::  Upot,dUdt,dUdr(1:3)
 
 ! Perturbations
 real(dk)    ::  lon_Earth,r2(1:3)
 real(dk)    ::  f(1:3),p(1:3)
 
-! Debug
-integer,save  ::  called = 1
-
-! ==============================================================================================
-!
-!                                            EXECUTION
-!
-! ==============================================================================================
+! ==============================================================================
 
 ! INDEX OF STATE VECTORS
 
@@ -82,9 +72,9 @@ integer,save  ::  called = 1
 !                      linear time element,
 !                      depending on flag_time)
 
-! ==============================================================================================
+! ==============================================================================
 ! 01. COMPUTE AUXILIARY QUANTITIES (1)
-! ==============================================================================================
+! ==============================================================================
 
 ! Store trig functions
 sph = sin(phi)
@@ -98,9 +88,9 @@ emme  = sqrt(1._dk - z(1)**2_ik - z(2)**2_ik)
 cnu = (cph - z(1) + (zeta*z(2))/(emme + 1._dk))/rho
 snu = (sph - z(2) - (zeta*z(1))/(emme + 1._dk))/rho
 
-! ==============================================================================================
+! ==============================================================================
 ! 02. COMPUTE POSITION IN INERTIAL FRAME AND POTENTIAL
-! ==============================================================================================
+! ==============================================================================
 
 ! Intermediate frame unit vectors
 x_vec = 2._dk*[ .5_dk - z(5)**2_ik - z(6)**2_ik,  &
@@ -123,9 +113,9 @@ Upot = 0._dk; dUdt = 0._dk; dUdr = 0._dk
 !v_tan = sqrt((1. - z(1)**2 - z(2)**2)/(z(3)*rho**2) - 2.*Upot)
 !vV = v_rad*i_vec + v_tan*j_vec
 
-! ==============================================================================================
+! ==============================================================================
 ! 03. COMPUTE PERTURBING ACCELERATIONS
-! ==============================================================================================
+! ==============================================================================
 
 p = 0._dk; f = 0._dk
 
@@ -158,9 +148,9 @@ p    = DINERT2ORB_EDROMO(p,z,cnu,snu)
 
 f = p + dUdr
 
-! ==============================================================================================
+! ==============================================================================
 ! 04. COMPUTE AUXILIARY QUANTITIES (2)
-! ==============================================================================================
+! ==============================================================================
 
 enne = sqrt(emme**2_ik - 2._dk*z(3)*rho**2_ik*Upot)
 
@@ -172,9 +162,9 @@ aux1 = ((2._dk*Upot - f(1)*rmag)*(2._dk - rho + emme)*rmag)/(emme*(emme+1._dk))
 aux2 = (L3*zeta*(rho-emme))/(emme*(emme+1._dk))
 wz   = (enne - emme)/rho + aux1 + aux2
 
-! ==============================================================================================
+! ==============================================================================
 ! 05. COMPUTE RIGHT-HAND SIDE
-! ==============================================================================================
+! ==============================================================================
 
 ! In-plane
 aux3 = (f(1)*rmag - 2._dk*Upot)*rmag

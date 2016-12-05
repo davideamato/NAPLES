@@ -1,4 +1,28 @@
 module TRANSFORM
+! Description:
+!    Contains subroutines to transform between the state vectors of the
+!    regularized formulations and the position and velocity in Cartesian
+!    coordinates.
+! 
+! References:
+! [1] Stiefel E.L., and Scheifele G., "Linear and Regular Celestial Mechanics",
+!     Springer-Verlag Berlin Heidelberg New York, Berlin, Germany. 1971.
+! [2] Baù G., Bombardelli C., Peláez J., and Lorenzini E., "Non-singular orbital
+!     elements for special perturbations in the two-body problem", MNRAS 454,
+!     pp. 2890-2908. 2015.
+! [3] Baù G., Amato D., Bombardelli C., and Milani A., "New orbital elements for
+!     accurate propagation in the Solar System", Proceedings of the 6th
+!     International Conference on Astrodynamics Tools and Techniques, European
+!     Space Agency, Darmstadt, Germany. March 2016.
+! [4] Roa J., and Peláez J., "Orbit propagation in Minkowskian geometry", CMDA
+!     123(1), pp. 13-43. 2015.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 implicit none
@@ -7,19 +31,17 @@ contains
 
 function DKSMAT(u)
 ! Description:
-!    Computes the KS-matrix from the KS extended state vector.
+!    Computes the KS-matrix from the K-S state vector.
 ! 
-! ==============================================================================================
+! ==============================================================================
 
 ! VARIABLES
 implicit none
 ! Arguments
-real(dk),intent(in)  ::  u(:)                ! KS extended state vector
-real(dk)             ::  DKSMAT(1:4,1:4)     ! KS-matrix
+real(dk),intent(in)  ::  u(:)                ! K-S state vector
+real(dk)             ::  DKSMAT(1:4,1:4)     ! K-S-matrix
 
-! ==============================================================================================
-!                                            EXECUTION
-! ==============================================================================================
+! ==============================================================================
 
 DKSMAT = RESHAPE([ u(1),  u(2),  u(3),  u(4)&
                 &,-u(2),  u(1),  u(4), -u(3)&
@@ -30,13 +52,9 @@ end function DKSMAT
 
 subroutine DKS2CART(u,x,xdot)
 ! Description:
-!    Computes the Cartesian state (ND) from the KS state vector.
+!    Computes the Cartesian state (dimensionless) from the KS state vector.
 ! 
-! ==============================================================================================
-!
-!                                  VARIABLES AND DECLARATIONS
-!
-! ==============================================================================================
+! ==============================================================================
 
 ! VARIABLES
 implicit none
@@ -46,7 +64,7 @@ real(dk),intent(out)  ::  x(:),xdot(:)          ! Position and velocity, ND
 ! Locals
 real(dk)              ::  r                     ! Radius magnitude, ND
 
-! ==============================================================================================
+! ==============================================================================
 
 ! Position
 x(1) = u(1)**2_ik - u(2)**2_ik - u(3)**2_ik + u(4)**2_ik
@@ -70,9 +88,7 @@ function DTO_ENERGY(z)
 !    Transforms the third element of the Dromo state vector from the inverse of the specific
 !    angular momentum to the total energy.
 !
-! ==============================================================================================
-!                                  VARIABLES AND DECLARATIONS
-! ==============================================================================================
+! ==============================================================================
 
 ! VARIABLES
 implicit none
@@ -81,9 +97,7 @@ real(dk)              ::  DTO_ENERGY(1:8)
 ! Arguments
 real(dk),intent(in)   ::  z(1:8)
 
-! ==============================================================================================
-!                                            EXECUTION
-! ==============================================================================================
+! ==============================================================================
 
 DTO_ENERGY(:) = z(:)
 DTO_ENERGY(3) = .5_dk*(z(1)**2_ik + z(2)**2_ik - z(3)**2_ik)
@@ -94,9 +108,7 @@ function DTO_MOMENTUM(z)
 !    Transforms the third element of the Dromo state vector from the total energy
 !    to the inverse of the specific angular momentum.
 !
-! ==============================================================================================
-!                                  VARIABLES AND DECLARATIONS
-! ==============================================================================================
+! ==============================================================================
 
 ! VARIABLES
 implicit none
@@ -105,9 +117,7 @@ real(dk)             ::  DTO_MOMENTUM(1:8)
 ! Arguments
 real(dk),intent(in)  ::  z(1:8)
 
-! ==============================================================================================
-!                                            EXECUTION
-! ==============================================================================================
+! ==============================================================================
 
 DTO_MOMENTUM(:) = z(:)
 DTO_MOMENTUM(3) = sqrt(z(1)**2_ik + z(2)**2_ik - 2._dk*z(3))
@@ -115,14 +125,10 @@ end function DTO_MOMENTUM
 
 subroutine DDROMO2CART(z,phi,phi0,RV,VV,pot,propagateEnergy)
 ! Description:
-!    Transforms from Dromo state vector to Cartesian coordinates. Optionally, it takes into
-!    account the potential deriving from Earth's oblateness.
+!    Transforms from Dromo state vector to Cartesian coordinates. Optionally, it
+!    takes into account the potential deriving from Earth's oblateness.
 !
-! ==============================================================================================
-!
-!                                  VARIABLES AND DECLARATIONS
-!
-! ==============================================================================================
+! ==============================================================================
 
 ! VARIABLES
 implicit none
@@ -138,11 +144,11 @@ real(dk),intent(out)  ::  RV(1:3), VV(1:3)  ! Cartesian position and velocity.
 real(dk)              ::  r, u, s, lam, sdp, cdp
 real(dk)              ::  z3               ! Inverse of specific angular momentum.
 
-! ==============================================================================================
+! ==============================================================================
 
-! ==============================================================================================
+! ==============================================================================
 ! 01. TOTAL ENERGY / SPECIFIC ANGULAR MOMENTUM
-! ==============================================================================================
+! ==============================================================================
 
 if (propagateEnergy) then
     z3 = sqrt(z(1)**2_ik + z(2)**2_ik - 2._dk*z(3))
@@ -150,18 +156,18 @@ else
     z3 = z(3)
 end if
 
-! ==============================================================================================
+! ==============================================================================
 ! 02. COMPUTATION OF AUXILIARIES
-! ==============================================================================================
+! ==============================================================================
 
 sdp = sin(phi-phi0); cdp = cos(phi-phi0)
 s = z3 + z(1)*cos(phi) + z(2)*sin(phi)
 r = 1._dk/(z3*s)
 u = z(1)*sin(phi) - z(2)*cos(phi)
 
-! ==============================================================================================
+! ==============================================================================
 ! 03. COMPUTATION OF STATE
-! ==============================================================================================
+! ==============================================================================
 
 lam = sqrt(s**2_ik - 2._dk*pot)
 
@@ -183,10 +189,10 @@ end subroutine DDROMO2CART
 
 function DINERT2ORB(vI,z,phi,phi0)
 ! Description:
-!    Transforms a vector vI from orbital to inertial axes through a rotation matrix obtained
-!    fromo Dromo(P) elements.
+!    Transforms a vector vI from orbital to inertial axes through a rotation
+!    matrix obtained from Dromo(P) elements.
 !
-! ==============================================================================================
+! ==============================================================================
         
 ! VARIABLES
 implicit none
@@ -201,7 +207,7 @@ real(dk)                     ::  DINERT2ORB(1:3)
 real(dk)                     ::  Q0T(1:3,1:3), MphiT(1:3,1:3), QIR(1:3,1:3)
 real(dk)                     ::  dphi
 
-! ==============================================================================================
+! ==============================================================================
 
 dphi  = phi - phi0
 
@@ -224,19 +230,12 @@ end function DINERT2ORB
 
 function DINERT2ORB_EDROMO(vI,z,cnu,snu)
 ! Description:
-!    Transforms a vector vI from inertial to orbital axes through a rotation matrix obtained
-!    fromo EDromo(P) elements.
+!    Transforms a vector vI from inertial to orbital axes through a rotation
+!    matrix obtained from EDromo(P) elements.
 !
-! ==============================================================================================
-!
-!                                  VARIABLES AND DECLARATIONS
-!
-! ==============================================================================================
+! ==============================================================================
 
-! MODULES
-        
 ! VARIABLES
-
 implicit none
 
 ! Arguments
@@ -251,7 +250,7 @@ real(dk)         ::  RTOT(1:3,1:3)  ! Inertial -> Orbital rotation matrix (= R2*
 ! Auxiliary variables
 real(dk)  ::  z42,z52,z62,z4z5,z6z7,z4z6,z5z7,z5z6,z4z7
 
-! =============EXECUTION============
+! ==============================================================================
 
 z42 = z(4)**2
 z52 = z(5)**2
@@ -276,8 +275,12 @@ DINERT2ORB_EDROMO = matmul(RTOT,vI)
 
 end function DINERT2ORB_EDROMO
 
-
 subroutine DEDROMO2CART(z,phi,Upot,r_vec,v_vec)
+! Description:
+!    Transforms from the EDromo state vector "z", fictitious time "phi" and
+!    potential "Upot" to Cartesian position and velocity "r_vec", "v_vec".
+! 
+! ==============================================================================
 
 ! VARIABLES
 implicit none
@@ -294,11 +297,11 @@ real(dk)    ::  x_vec(1:3),y_vec(1:3)
 real(dk)    ::  i_vec(1:3),j_vec(1:3)
 real(dk)    ::  v_rad,v_tan
 
-! ==============================================================================================
+! ==============================================================================
 
-! ==============================================================================================
+! ==============================================================================
 ! 01. COMPUTE AUXILIARY QUANTITIES
-! ==============================================================================================
+! ==============================================================================
 
 ! Store trig functions
 sph = sin(phi)
@@ -312,9 +315,9 @@ emme  = sqrt(1._dk - z(1)**2_ik - z(2)**2_ik)
 cnu = (cph - z(1) + (zeta*z(2))/(emme + 1._dk))/rho
 snu = (sph - z(2) - (zeta*z(1))/(emme + 1._dk))/rho
 
-! ==============================================================================================
+! ==============================================================================
 ! 02. COMPUTE POSITION IN INERTIAL FRAME
-! ==============================================================================================
+! ==============================================================================
 
 ! Intermediate frame unit vectors
 x_vec = 2._dk*[ .5_dk - z(5)**2_ik - z(6)**2_ik,  &
@@ -327,9 +330,9 @@ y_vec = 2._dk*[  z(4)*z(5) - z(6)*z(7),  &
 ! Position in inertial frame
 r_vec = rmag*(x_vec*cnu + y_vec*snu)
     
-! ==============================================================================================
+! ==============================================================================
 ! 03. COMPUTE VELOCITY IN INERTIAL FRAME
-! ==============================================================================================
+! ==============================================================================
 
 ! Radial and tangential unit vectors in the inertial frame
 i_vec = x_vec*cnu + y_vec*snu
@@ -346,6 +349,11 @@ end subroutine DEDROMO2CART
 
 
 function DEDROMO_TE2TIME(z,phi,flag_time)
+! Description:
+!    Gets the value of physical time from the EDromo state vector "z" and
+!    fictitious time "phi".
+!
+! ============================================================================== 
 
 ! VARIABLES
 implicit none
@@ -355,7 +363,7 @@ integer(ik),intent(in)  ::  flag_time
 ! Function definition
 real(dk)                ::  DEDROMO_TE2TIME
 
-! ==============================================================================================
+! ==============================================================================
 
 if ( flag_time == 0_ik ) then
     ! Physical time	
@@ -373,7 +381,8 @@ end function DEDROMO_TE2TIME
 
 function DGDROMO_TE2TIME(z,phi,flag_time)
 ! Description:
-!    Computes value of physical time from the GDromo state vector.
+!    Computes value of physical time from the GDromo state vector "z" and
+!    fictitious time "phi".
 !
 ! ==============================================================================
 
@@ -459,10 +468,10 @@ end subroutine DGDROMO2CART
 
 function DINERT2ORB_GDROMO(vI,z,cnu,snu)
 ! Description:
-!    Transforms a vector vI from orbital to inertial axes through a rotation matrix obtained
-!    fromo GDromo(P) elements.
+!    Transforms a vector vI from orbital to inertial axes through a rotation 
+!    matrix obtained fromo GDromo(P) elements.
 !
-! ==============================================================================================
+! ==============================================================================
         
 ! VARIABLES
 implicit none
@@ -475,7 +484,7 @@ real(dk)  ::  DINERT2ORB_GDROMO(1:3)
 ! Locals
 real(dk)  ::  Q0T(1:3,1:3), MnuT(1:3,1:3), QIR(1:3,1:3)
 
-! =============EXECUTION============
+! ==============================================================================
 
 ! Compute rotation matrix QIR (Inertial -> Orbital)
 MnuT = reshape( (/ cnu, -snu, 0._dk,&
@@ -500,29 +509,25 @@ end function DINERT2ORB_GDROMO
 
 subroutine DGDROMO2CART_CORE(z,rmag,cnu,snu,zeta,rho,emme,RV,VV,pot)
 ! Description:
-!    Transforms from HDromo state vector to Cartesian coordinates. Optionally, it takes into
-!    account the potential deriving from Earth's oblateness.
+!    Transforms from GDromo state vector to Cartesian coordinates. 
+!    Optionally, it takes into account the potential.
 !
-! ==============================================================================================
-!
-!                                  VARIABLES AND DECLARATIONS
-!
-! ==============================================================================================
+! ==============================================================================
 
 implicit none
 
 ! Arguments
-real(dk),intent(in)   ::  z(1:8)                ! HDromo state vector
+real(dk),intent(in)   ::  z(1:8)                ! GDromo state vector
 real(dk),intent(in)   ::  rmag                  ! Radius vector magnitude
 real(dk),intent(in)   ::  pot                   ! Potential
 real(dk),intent(in)   ::  zeta,rho,emme         ! Auxiliary quantities
 real(dk),intent(in)   ::  cnu,snu               ! cosine and sine of the angle of rotation nu between the LVLH and the
                                                 ! intermediate frames
-real(dk),intent(out)  ::  RV(1:3), VV(1:3)  	! Cartesian position and velocity
+real(dk),intent(out)  ::  RV(1:3), VV(1:3)      ! Cartesian position and velocity
 ! Locals
 real(dk)  ::  u,lam
 
-! ==============================================================================================
+! ==============================================================================
 
 ! Position vector
 RV(1) =  rmag*( ( 1._dk - 2._dk*z(5)**2_ik - 2._dk*z(6)**2_ik )*cnu +&

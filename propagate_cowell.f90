@@ -1,4 +1,15 @@
 module PROP_COWELL_MOD
+! Description:
+!    Containts the QLEG_COW_LSODAR subroutine, which propagates a trajectory with
+!    Cowell's formulation in quadruple precision from initial time JD_i to final
+!    time JD_f.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 
@@ -6,10 +17,13 @@ implicit none
 
 contains
 
-subroutine QLEG_COW_LSODAR(R_i,V_i,JD_i,JD_f,dt_D,tol,Yt,istate,jroot,ind_sw,calls)
+
+
+subroutine QLEG_COW_LSODAR(R_i,V_i,JD_i,JD_f,dt_D,tol,Yt,istate,jroot,ind_sw)
 ! Description:
-!    Propagates from JD_i to JD_f starting from (R_i,V_i), using Cowell's formulation with timestep
-!    dt_D (dimensional).
+!    Propagates from JD_i to JD_f starting from (R_i,V_i), integrating Cowell's
+!    formulation in quadruple precision with LSODAR, with timestep dt_
+!    (dimensional).
 !
 ! ==============================================================================
 
@@ -33,20 +47,13 @@ real(qk),allocatable,intent(out)  ::  Yt(:,:)  ! Trajectory array
 integer(ik),intent(out)  ::  istate            ! Integration diagnostics
 integer(ik),intent(out)  ::  jroot(1)          ! Roots
 integer(ik),intent(out)  ::  ind_sw            ! Index of switch time
-integer(ik),intent(out)  ::  calls             ! Function calls for this leg
 
 ! States and times
 real(qk)  ::  y(1:6)
 real(qk)  ::  t,dt,t_f
-real(qk)  ::  lon_Earth,r_Earth(1:3),v_Earth(1:3)
-real(qk)  ::  r_helio(1:3),v_helio(1:3),t_D
-real(qk)  ::  r_geo(1:3),v_geo(1:3)
 
 ! Memory
 real(qk),allocatable  ::  CHUNK(:,:)
-
-! Diagnostics
-real(qk)  ::  sma,ecc
 
 ! LSODAR variables
 integer(ik),parameter  ::  neq = 6_ik
@@ -75,7 +82,7 @@ real(qk),parameter  ::  zero = epsilon(0._qk)
 t = JD_i*secsPerDay*TU
 t_f = JD_f*secsPerDay*TU
 dt = dt_D*secsPerDay*TU
-steps = (t_f - t)/dt
+steps = int((t_f - t)/dt)
 y(1:3) = R_i/DU
 y(4:6) = V_i/(DU*TU)
 
@@ -155,41 +162,31 @@ contains
   end subroutine FAKE
   
   function STATE_HELIO(t,y,inSoI)
-    real(qk),intent(in) ::  t,y(1:6)
-    logical,intent(in)  ::  inSoI
-    real(qk)  ::  STATE_HELIO(1:7)
-    real(qk)  ::  t_D,r_D(1:3),v_D(1:3)
-    real(qk)  ::  yD_Earth(1:6)
-    
-    t_D = t/TU
-    STATE_HELIO(1) = t_D
-    
-    if (inSoI) then
-      yD_Earth = QPOS_VEL_CIRC(t_D,wEarth,smaEarth)
-      STATE_HELIO(2:4) = yD_Earth(1:3) + y(1:3)*DU 
-      STATE_HELIO(5:7) = yD_Earth(4:6) + y(4:6)*DU*TU
-    
-    else
-      STATE_HELIO(2:4) = y(1:3)*DU
-      STATE_HELIO(5:7) = y(4:6)*DU*TU
-    
-    end if
-    
+  ! Description:
+  !    Gives position and velocity in the heliocentric frame.
+  ! ============================================================================
+  real(qk),intent(in) ::  t,y(1:6)
+  logical,intent(in)  ::  inSoI
+  real(qk)  ::  STATE_HELIO(1:7)
+  real(qk)  ::  t_D
+  real(qk)  ::  yD_Earth(1:6)
+  
+  t_D = t/TU
+  STATE_HELIO(1) = t_D
+  
+  if (inSoI) then
+    yD_Earth = QPOS_VEL_CIRC(t_D,wEarth,smaEarth)
+    STATE_HELIO(2:4) = yD_Earth(1:3) + y(1:3)*DU 
+    STATE_HELIO(5:7) = yD_Earth(4:6) + y(4:6)*DU*TU
+  
+  else
+    STATE_HELIO(2:4) = y(1:3)*DU
+    STATE_HELIO(5:7) = y(4:6)*DU*TU
+  
+  end if
+  
   end function STATE_HELIO
   
 end subroutine QLEG_COW_LSODAR
 
-
-
 end module PROP_COWELL_MOD
-
-!if (iwork(19) == 2_ik .and. .not.(meth_switch)) then
-!  if (dt > 0._qk) then
-!      write(*,'(a,l)') 'BDF method used in the reference propagation (fwd)'
-!      meth_flag(2) = 1_ik
-!  else
-!      write(*,'(a,l)') 'BDF method used in the reference propagation (bwd)'
-!      meth_flag(1) = 2_ik
-!  end if
-!  meth_switch = .true.
-!end if

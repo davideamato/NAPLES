@@ -1,4 +1,13 @@
 module EVTS_KS
+! Description:
+!    Contains event functions for the K-S formulation in double precision.
+!
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 

@@ -1,4 +1,14 @@
 module PROCESSING
+! Description:
+!    Contains the RESIDUALS subroutine for computing residuals (= numerical
+!    errors wrt the reference integration).
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: dk,qk
 implicit none
@@ -8,6 +18,11 @@ contains
 
 subroutine RESIDUALS(npts,ref,test,AU_km,mu,RSw,dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,&
 &dSMA_abs,RSw_eff,RSw_diff_max)
+! Description:
+!    Computes absolute and relative position residuals, relative energy residuals
+!    and absolute SMA residuals for the current integration.
+! 
+! ============================================================================== 
 
 ! VARIABLES
 implicit none
@@ -26,7 +41,6 @@ real(dk),intent(out)  ::  RSw_diff_max
 
 ! Locals
 ! QUAD
-real(qk)     ::  kms_AUPerDay
 real(qk)     ::  dR_vec(1:3),dV_vec(1:3)
 real(qk)     ::  r_ref,v_ref
 ! DOUBLE
@@ -38,7 +52,7 @@ real(dk)     ::  RSw_diff(1:2)
 
 integer  ::  i
 
-! ==============================================================================================
+! ==============================================================================
 
 do i=1,npts
   r_ref = sqrt(dot_product(ref(i,2:4),ref(i,2:4)))

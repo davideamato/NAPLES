@@ -1,4 +1,13 @@
 module IO
+! Description:
+!    Contains I/O procedures and file units.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 ! MODULE
 use KINDS, only: dk,qk
@@ -11,10 +20,14 @@ integer,parameter  ::  id_ares = 12, id_rres = 13, id_enres = 14
 integer,parameter  ::  id_stats = 15
 integer,parameter  ::  id_sma = 16
 
-
 contains
 
 subroutine READ_SETTINGS()
+! Description:
+!    Reads the file "input.txt", containing the settings for the ensemble of
+!    propagations. The file must be in the same directory as the executable.
+! 
+! ==============================================================================
 
 ! MODULES
 use SETTINGS
@@ -175,6 +188,10 @@ end subroutine READ_SETTINGS
 
 
 subroutine WRITE_SETTINGS(pathname,runID)
+! Description:
+!    Saves settings of the ensemble propagation to disk in the output directory.
+! 
+! ==============================================================================
 
 use SETTINGS
 implicit none
@@ -257,13 +274,17 @@ close(id_set)
 end subroutine WRITE_SETTINGS
 
 
-subroutine CREATE_ENRES(pathname,runID)
+subroutine CREATE_ENRES(pathname)
+! Description:
+!    Creates the file containing the residuals in energy.
+! 
+! ==============================================================================
 
 implicit none
 ! Arguments IN
-character(len=*),intent(in)    ::  pathname,runID
+character(len=*),intent(in)    ::  pathname
 
-! ==============================================================================================
+! ==============================================================================
 
 open(unit=id_enres,file=pathname,status='replace',action='write')
 write(id_enres,'(120(''#''))')
@@ -279,13 +300,17 @@ write(id_enres,'(127(''#''))')
 end subroutine CREATE_ENRES
 
 
-subroutine CREATE_ABSRES(pathname,runID)
+subroutine CREATE_ABSRES(pathname)
+! Description:
+!    Creates the file containing the absolute residuals in position.
+! 
+! ==============================================================================
 
 implicit none
 ! Arguments IN
-character(len=*),intent(in)    ::  pathname,runID
+character(len=*),intent(in)    ::  pathname
 
-! ==============================================================================================
+! ==============================================================================
 
 open(unit=id_ares,file=pathname,status='replace',action='write')
 write(id_ares,'(120(''#''))')
@@ -302,11 +327,15 @@ write(id_ares,'(172(''#''))')
 end subroutine CREATE_ABSRES
 
 
-subroutine CREATE_RELRES(pathname,runID)
+subroutine CREATE_RELRES(pathname)
+! Description:
+!    Creates the file containing the relative residuals in position.
+! 
+! ==============================================================================
 
 implicit none
 ! Arguments IN
-character(len=*),intent(in)    ::  pathname,runID
+character(len=*),intent(in)    ::  pathname
 
 ! ==============================================================================
 
@@ -325,11 +354,15 @@ write(id_rres,'(172(''#''))')
 end subroutine CREATE_RELRES
 
 
-subroutine CREATE_SMARES(pathname,runID)
+subroutine CREATE_SMARES(pathname)
+! Description:
+!    Creates the file containing the absolute residuals in semi-major axis.
+! 
+! ==============================================================================
 
 implicit none
 ! Arguments IN
-character(len=*),intent(in)    ::  pathname,runID
+character(len=*),intent(in)    ::  pathname
 
 ! ==============================================================================
 
@@ -347,11 +380,15 @@ write(id_sma,'(128(''#''))')
 end subroutine CREATE_SMARES
 
 
-subroutine CREATE_STATS(pathname,runID)
+subroutine CREATE_STATS(pathname)
+! Description:
+!    Creates the file containing the integration statistics.
+! 
+! ==============================================================================
 
 implicit none
 ! Arguments IN
-character(len=*),intent(in)    ::  pathname,runID
+character(len=*),intent(in)    ::  pathname
 
 ! ==============================================================================
 
@@ -373,6 +410,13 @@ end subroutine CREATE_STATS
 subroutine WRITE_RESULTS(i,j,k,l,dmin,ecc,theta,RSw,&
 &dR_abs,dR_rel,dV_abs,dV_rel,dEn_rel,dSMA_abs,RSw_diff,MF,XC,callsArr,istepsArr,&
 &mordArr,calls_end,mord_end,isteps_end)
+! Description:
+!    Writes the results from the ensemble of propagations to disk. The following
+!    results are saved: relative energy residuals, absolute and relative
+!    position residuals, absolute semi-major axis residuals, integration
+!    statistics.
+! 
+! ==============================================================================
 
 use SETTINGS, only: n_rs
 implicit none
@@ -414,6 +458,12 @@ end subroutine WRITE_RESULTS
 
 
 subroutine WRITE_EXCEPTION(i,j,k,l,dmin,ecc,theta,RSw,MF,XC)
+! Description:
+!    When an exception takes place in the main loops, this subroutine fills the
+!    corresponding entry in the output files with NaNs and the error codes of
+!    the exception.
+!    
+! ==============================================================================
 
 implicit none
 ! Arguments IN
@@ -433,23 +483,5 @@ write&
 
 end subroutine WRITE_EXCEPTION
 
-
-
 end module IO
-
-! ===========================
-! ======== GARBAGE ==========
-! ===========================
-
-!write(id_enres,'(4(i3,'',''),4(g14.7,'',''),3(es14.7,'',''),3i1,'','',i3.3)')&
-!& i,j,k,l,dmin,ecc,theta,RSw,dEn_rel,MF,XC
-!write(id_ares,'(4(i3,'',''),4(g14.7,'',''),6(es14.7,'',''),3i1,'','',i3.3)')&
-!& i,j,k,l,dmin,ecc,theta,RSw,dR_abs,dV_abs,MF,XC
-!write(id_rres,'(4(i3,'',''),4(g14.7,'',''),6(es14.7,'',''),3i1,'','',i3.3)')&
-!& i,j,k,l,dmin,ecc,theta,RSw,dR_rel,dV_rel,MF,XC
-!write(id_sma,'(4(i3,'',''),4(g14.7,'',''),3(es14.7,'',''),3i1,'','',i3.3)')&
-!& i,j,k,l,dmin,ecc,theta,RSw,dSMA_abs,MF,XC
-!write(id_stats,&
-!&'(4(i3,'',''),4(g14.7,'',''),3(i9,'',''),3(g14.7,'',''),3(i10,'',''),g14.7,'','',3i1,'','',i3.3)')&
-!&i,j,k,l,dmin,ecc,theta,RSw,callsArr,calls_end,mordArr,mord_end,istepsArr,isteps_end,RSw_diff,MF,XC
 

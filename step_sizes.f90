@@ -1,4 +1,18 @@
 module STEPSIZES
+! Description:
+!    Contains the subroutine DSTEPSIZE used to compute the initial step size for
+!    the distinct formulations according to the reference.
+! 
+! Reference:
+!    Amato D., Baù G., and Bombardelli C., "Accurate numerical orbit propagation
+!    of planetary close encounters". Submitted to MNRAS. 2016.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: dk,qk
 implicit none
@@ -8,13 +22,19 @@ contains
 
 
 function DSTEPSIZE(R,V,mu,DU,eqs,inSoI,tol)
-! Choose the initial stepsize according to the formulation and the sign of the
-! orbital energy.
+! Description:
+!    Choose the initial stepsize according to the formulation and the sign of the
+!    orbital energy.
 ! 
-! Reference: Battin R.H., "An Introduction to the Mathematics and Methods of
-! Astrodynamics", Revised Ed., AIAA, Reston, VA, USA. 1999.
+! Reference:
+! [1] Battin R.H., "An Introduction to the Mathematics and Methods of
+!     Astrodynamics", Revised Ed., AIAA, Reston, VA, USA. 1999.
+! [2] Amato D., Baù G., and Bombardelli C., "Accurate numerical orbit
+!    propagation of planetary close encounters". Submitted to MNRAS. 2016.
+! 
+! ==============================================================================
 
-use CONSTANTS, only: twopi,pi,smaEarth,TU
+use CONSTANTS, only: twopi,pi,smaEarth
 
 ! VARIABLES
 ! Arguments

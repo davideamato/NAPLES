@@ -1,4 +1,14 @@
 module EQS_KS
+! Description:
+!    Contains the subroutine for computing the RHS of the K-S equations in
+!    double precision.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,qk,dk
 implicit none
@@ -7,8 +17,8 @@ contains
 
 subroutine DKS_RHS(neq,s,u,udot)
 ! Description:
-!    Computes the value of the right-hand side of the equations of motion of the Kustaanheimo-
-!    Stiefel formulation.
+!    Computes the value of the right-hand side of the equations of motion of the
+!    Kustaanheimo-Stiefel formulation.
 !
 ! ==============================================================================
 !                                  VARIABLES AND DECLARATIONS
@@ -41,10 +51,6 @@ real(dk)    ::  r2(1:3)             ! Position vector of the third body [-]
 real(dk)    ::  lon_Earth           ! Current Earth longitude [rad]
 real(dk)    ::  Q(1:4)              ! Total acceleration, ND
 
-! Debug
-integer(ik)  ::  i
-
-
 ! ==============================================================================
 
 
@@ -61,7 +67,6 @@ integer(ik)  ::  i
 call DKS2CART(u,x,xdot)
 r = sqrt(dot_product(x,x))
 t = u(10)
-!!t0 = t0Prop*TU
 
 ! ==============================================================================
 ! 02. COMPUTE PERTURBING POTENTIAL, ND

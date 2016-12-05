@@ -1,4 +1,13 @@
 module EVTS_EDROMO
+! Description:
+!    Contains event functions for the EDromo formulation in double precision.
+!
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 
@@ -6,7 +15,7 @@ contains
 
 subroutine DEDROMO_EVT(neq,phi,z,ng,roots)
 ! Description:
-!    Finds roots to stop the integration for the Dromo formulation.
+!    Finds roots to stop the integration for the EDromo formulation.
 ! 
 ! ==============================================================================
 
@@ -28,9 +37,6 @@ real(dk),intent(out)     ::  roots(1:ng)
 ! Locals
 real(dk)  ::  zeta
 real(dk)  ::  t         ! Current time [-]
-
-! Debug
-integer,save  ::  called = 1
 
 ! ==============================================================================
 

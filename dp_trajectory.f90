@@ -1,4 +1,14 @@
 module TEST_PROP
+! Description:
+!    Contains the subroutine DP_TRAJECTORY, used to compute the test trajectory
+!    in double precision.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+!
+! ==============================================================================
 
 use KINDS, only: ik,dk,qk
 
@@ -7,6 +17,12 @@ implicit none
 contains
 
 subroutine DP_TRAJECTORY(R_i,V_i,JD_i,JD_f,eqs,integ,tol,Yt,idiag,rdiag)
+! Description:
+!    Computes the "test" trajectory in double precision starting from initial
+!    position "R_i" and velocity "V_i" (dimensional). It integrates from epoch
+!    "JD_i" to "JD_f" using the equations "eqs" with the integrator "integ".
+! 
+! ==============================================================================
 
 ! MODULES
 use AUXILIARIES,  only: inSoI,ind_time
@@ -155,10 +171,8 @@ case (2)
   s_i = DFTIME_2D(R_i,V_i,mu)
   
   ! (B)
-  !!! CHECK THIS
   call DINTEGRATE(DKS_RHS,FAKE_RHS_T2,DKS_EVT,X_i,Xdot_i,s_i,ds_i,neq,&
       &real(JD_f,dk),eqs,integ,tol,Yt,idiag,rdiag)
-  !!! CHECK THIS
   
 case (3)
   ! (A)

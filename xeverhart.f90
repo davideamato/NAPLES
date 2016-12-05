@@ -1,11 +1,11 @@
 module XEVERHART
-! module XEVERHART
-! This is a major re-implementation in modern Fortran of Everhart's integrator
-! RA15, with added features such as low-order dense output and event location. 
-! It is based on the implementation in modern Fortran of RA15 by Angelo Graziosi
-! (firstname.lastnameATalice.it) which can be found at
+! Description:
+!    This is a major re-implementation in modern Fortran of Everhart's integrator
+!    RA15, with added features such as low-order dense output and event location. 
+!    It is based on the implementation in modern Fortran of RA15 by Angelo Graziosi
+!    which can be found at
 ! 
-! http://www.webalice.it/angelo.graziosi/Everhart-Integrator.pdf
+!    http://www.webalice.it/angelo.graziosi/Everhart-Integrator.pdf
 !
 ! References:
 ! 
@@ -20,10 +20,11 @@ module XEVERHART
 ! [4] H. Rein, D.S. Spiegel, ... TODO
 ! 
 ! Author:
-!     Davide Amato
-!     Technical University of Madrid
-!     d.amato@upm.es
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
 ! 
+! ==============================================================================
 
 use KINDS,   only: dp=>dk,qp=>qk
 use SUNDMAN, only: DSUND,DDSUND,TIMETOUT
@@ -67,9 +68,9 @@ contains
 
 subroutine XRA15(nclass,neq,eqs,itask,FORCE,ss,mip,xin,vin,h0in,tain,tzin,tstar&
 &,tip,yt,istate,idiag,ht)
-! subroutine XRA15
-! Driver subroutine for the XRA15 numerical solver, which uses the numerical
-! scheme by Everhart [1,2].
+! Description:
+!     Driver subroutine for the XRA15 numerical solver, which uses the numerical
+!     scheme by Everhart [1,2].
 ! 
 ! INPUTS:
 !   neq: number of scalar ODEs to be integrated.
@@ -136,7 +137,8 @@ subroutine XRA15(nclass,neq,eqs,itask,FORCE,ss,mip,xin,vin,h0in,tain,tzin,tstar&
 !   idiag(7): If = 1, the B-value iterations did not converge at some time
 !             during the integration.
 !   idiag(8): Maximum number of B-value iterations during the integration.
-!           
+! 
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)  ::  neq,nclass,eqs,mip,itask
@@ -170,8 +172,6 @@ integer :: ierr
 
 ! DIAGNOSTICS
 logical :: exc
-integer :: iii
-
 
 ! ==============================================================================
 
@@ -507,12 +507,12 @@ end subroutine XRA15
 
 
 subroutine XRA15_STEP(npq,ncl,FORCE,neq,x,v,t,h,f0,nf,ni,b,d,wc,wc0,uc,r,c,warn)
-! Performs one integration step with Everhart's Gauss-Radau numerical scheme of
-! order 15. This version implements the predictor-corrector iteration criteria
-! as in [4].
+! Description:
+!    Performs one integration step with Everhart's Gauss-Radau numerical scheme of
+!    order 15. This version implements the predictor-corrector iteration criteria
+!    as in [4].
 !
-! VARIABLE GLOSSARY
-! 
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)   ::  neq
@@ -534,7 +534,7 @@ real(dp),intent(inout) ::  b(1:nsteps,1:neq)
 real(dp)  ::  h2,s,q
 real(dp)  ::  fj(1:neq),tempv(1:neq),y(1:neq),yp(1:neq),gk(1:neq)
 real(dp)  ::  g(1:nsteps,1:neq)
-integer   ::  j,iii
+integer   ::  j
 real(dp)  ::  pc_err,pc_last
 
 
@@ -749,8 +749,11 @@ end subroutine XRA15_STEP
 
 subroutine XRA15_INTRP(neq,ncl,jip,mip,tip,tprev,xprev,vprev,h,f0,b,wc0,wc,uc,&
 &auxy,auxh)
-! Interpolates the numerical solution inside the last step to the prescribed
-! times vector "tip".
+! Description:
+!    Interpolates the numerical solution inside the last step to the prescribed
+!    times vector "tip".
+! 
+! ==============================================================================
 
 ! INPUTS
 logical,intent(in)   ::  ncl
@@ -827,10 +830,13 @@ end subroutine XRA15_INTRP
 
 
 subroutine XRA15_SCONTROL(neq,ns,nes,accept,nper,ncount,ss,tm,tf,b,f,wc,h,hp,exc,istate)
-! Computes the step size for the next step, "hp". If "hp" is "sfact" times
-! smaller than the current step size "h", signals to the caller to reject the
-! step. If "hp" is smaller than "h" and this is the first step, it does the same.
-! Uses the logic for step size selection from the IAS15 integrator [4].
+! Description:
+!    Computes the step size for the next step, "hp". If "hp" is "sfact" times
+!    smaller than the current step size "h", signals to the caller to reject the
+!    step. If "hp" is smaller than "h" and this is the first step, it does the same.
+!    Uses the logic for step size selection from the IAS15 integrator [4].
+! 
+! ==============================================================================
 
 ! INPUTS
 logical,intent(in)      ::  nes
@@ -854,7 +860,6 @@ integer,intent(inout)   ::  ncount
 ! LOCALS AND PARAMETERS
 integer,parameter  :: max_ncount = 10
 real(dp),parameter :: pw = one/7._dp, sr = 0.25_dp
-real(dp)  ::  hv,hval
 real(dp) :: b7max,fmax,err_est
 
 ! ==============================================================================
@@ -901,7 +906,10 @@ end subroutine XRA15_SCONTROL
 
 
 subroutine BPREDICT(neq,hp,h,ns,b,e)
-! Applies the correction BD for the B-values as specified in Sec. 2.5 of [1].
+! Description:
+!    Applies the correction BD for the B-values as specified in Sec. 2.5 of [1].
+! 
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)   ::  neq,ns
@@ -959,7 +967,10 @@ end subroutine BPREDICT
 
 
 subroutine RA15_COEFS(ncl,wc,uc,wc0,c,d,r)
-! Computes the coefficients for Everhart's numerical scheme of 15th order [1,2].
+! Description:
+!    Computes the coefficients for Everhart's numerical scheme of 15th order [1,2].
+! 
+! ==============================================================================
 
 ! INPUTS
 logical,intent(in)  ::  ncl
@@ -1022,11 +1033,14 @@ end subroutine RA15_COEFS
 
 subroutine NEWTON(npq,ncl,neq,eqs,FORCE,tstar,sroot,groot,dgroot,xroot,vroot,&
 &conv,niter,neval,s0,x0,v0,h0,f0,b0,e0,ns,ni,warn,d,wc,wc0,uc,r,c)
-! Finds the value of the root 'sroot' of the scalar function G, G(sroot) = 0,
-! starting from the initial guess 's0'.
-! The user has to provide the function DG evaluating the derivative of G.
-! The input variables with the '0' suffix refer to their value at the beginning
-! of the current integration step.
+! Description:
+!    Finds the value of the root 'sroot' of the scalar function G, G(sroot) = 0,
+!    starting from the initial guess 's0'.
+!    The user has to provide the function DG evaluating the derivative of G.
+!    The input variables with the '0' suffix refer to their value at the beginning
+!    of the current integration step.
+!
+! ==============================================================================
 
 ! INPUTS
 logical,intent(in)   ::  npq,ncl
@@ -1108,7 +1122,10 @@ end subroutine NEWTON
 subroutine BISECTION(eqs,neq,ns,ni,warn,FORCE,tstar,sprev,xprev,vprev,gprev,&
 &dg2prev,hprev,f0prev,bprev,eprev,scur,xcur,vcur,gcur,dg2cur,neval,niter,cflag,&
 &s0_guess,g0_guess,x0_guess,v0_guess,d,wc,wc0,uc,r,c)
-! Initial guess for Newton's method when dg2prev*dg2cur < 0.
+! Description:
+!    Initial guess for Newton's method when dg2prev*dg2cur < 0.
+! 
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)  :: eqs,neq,ns
@@ -1134,7 +1151,6 @@ real(dp)  ::  xa(1:neq),va(1:neq),xb(1:neq),vb(1:neq),xmid(1:neq),vmid(1:neq)
 real(dp)  ::  fa(1:neq),fb(1:neq)
 real(dp)  ::  b(1:nsteps,1:neq),e(1:nsteps,1:neq)
 real(dp)  ::  gmid,dg2a,dg2b
-
 
 ! ==============================================================================
 

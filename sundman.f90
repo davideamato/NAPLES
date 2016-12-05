@@ -1,18 +1,30 @@
 module SUNDMAN
+! Description:
+!    Contains the event functions for the regularized formulations when
+!    integrated with the XRA15 solver, and auxiliary routines.
+! 
+! Author:
+!    Davide Amato
+!    Space Dynamics Group - Technical University of Madrid
+!    d.amato@upm.es
+! 
+! ==============================================================================
 
 use KINDS, only: dk,qk
 implicit none
-
-!integer,parameter  ::  flag_time_EDr = 1
-!integer,parameter  ::  flag_time_GDr = 1
 
 contains
 
 
 function TIMETOUT(eqs,neq,tstar,s,x)
-! This is the EVENTS function for output at a prescribed time. It computes
-! the difference between the current time (computed from the state vector of
-! any regularized formulation) and the output time tstar.
+! Description:
+!    Event function for output at a prescribed time using XRA15 with regularized
+!    formulations. It computes the difference between the current time
+!    (computed from the state vector of any regularized formulation) and the
+!    output time tstar.
+! 
+! ==============================================================================
+
 use SETTINGS,  only: flag_time_EDr,flag_time_GDr
 use TRANSFORM, only: DEDROMO_TE2TIME,DGDROMO_TE2TIME
 
@@ -25,7 +37,6 @@ real(dk)  ::  TIMETOUT
 
 ! LOCALS
 real(dk)  ::  t
-real(qk)  ::  qt,qttout
 
 ! ==============================================================================
 
@@ -74,8 +85,11 @@ end function TIMETOUT
 
 
 function DSUND(eqs,neq,s,x,xdot)
-! Computes the value of dt/ds for the regularized formulations. It is a driver
-! subroutine calling DSUND_KS, DSUND_EDROMO, DSUND_GDROMO.
+! Description:
+!   Computes the value of dt/ds for the regularized formulations. It is a driver
+!   subroutine calling DSUND_KS, DSUND_EDROMO, DSUND_GDROMO.
+! 
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)   ::  eqs,neq
@@ -98,8 +112,11 @@ end function DSUND
 
 
 function DDSUND(eqs,neq,s,x,xdot)
-! Computes the value of d^2t/ds^2 for the regularized formulations. It is a driver
-! subroutine calling DDSUND_KS, DDSUND_EDROMO, DDSUND_GDROMO.
+! Description:
+!    Computes the value of d^2t/ds^2 for the regularized formulations. It is a
+!    driver subroutine calling DDSUND_KS, DDSUND_EDROMO, DDSUND_GDROMO.
+! 
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)   ::  eqs,neq
@@ -131,9 +148,6 @@ real(dk),intent(in)  ::  s,u(1:neq)
 ! OUTPUT
 real(dk)  ::  DSUND_KS
 
-! LOCALS
-real(dk)  ::  r
-
 ! ==============================================================================
 
 DSUND_KS = dot_product(u(1:4),u(1:4))
@@ -142,7 +156,10 @@ end function DSUND_KS
 
 
 function DSUND_EDROMO(neq,s,l)
-! Gives the value of dt/ds for the EDromo formulation.
+! Description:
+!    Gives the value of dt/ds for the EDromo formulation.
+!
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)  :: neq
@@ -163,7 +180,10 @@ end function DSUND_EDROMO
 
 
 function DSUND_GDROMO(neq,s,l)
-! Gives the value of dt/ds for the GDromo formulation.
+! Description:
+!    Gives the value of dt/ds for the GDromo formulation.
+! 
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)  :: neq
@@ -184,7 +204,10 @@ end function DSUND_GDROMO
 
 
 function DDSUND_KS(neq,s,u)
-! Gives the value of d^2t/ds^2 for the KS formulation.
+! Description:
+!    Gives the value of d^2t/ds^2 for the KS formulation.
+!
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)   ::  neq
@@ -192,9 +215,6 @@ real(dk),intent(in)  ::  s,u(1:neq)
 
 ! OUTPUT
 real(dk)  ::  DDSUND_KS
-
-! LOCALS
-real(dk)  ::  r
 
 ! ==============================================================================
 
@@ -204,7 +224,10 @@ end function DDSUND_KS
 
 
 function DDSUND_EDROMO(neq,s,l,ldot)
-! Gives the value of d^2t/ds^2 for the EDromo formulation.
+! Description:
+!    Gives the value of d^2t/ds^2 for the EDromo formulation.
+!
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)   ::  neq
@@ -232,7 +255,10 @@ end function DDSUND_EDROMO
 
 
 function DDSUND_GDROMO(neq,s,l,ldot)
-! Gives the value of d^2t/ds^2 for the GDromo formulation.
+! Description:
+!    Gives the value of d^2t/ds^2 for the GDromo formulation.
+!
+! ==============================================================================
 
 ! INPUTS
 integer,intent(in)   ::  neq
@@ -260,8 +286,3 @@ end function DDSUND_GDROMO
 
 
 end module SUNDMAN
-!    qt = x(10)/tstar
-!    qttout = qt - 1._qk
-!    TIMETOUT = qttout
-!!    TIMETOUT = real((real(x(10)/tstar,qk) - 1._qk),dk)
-!!    TIMETOUT = CSUM([x(10)/tstar,-1._dk])
